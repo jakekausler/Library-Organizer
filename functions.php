@@ -1321,8 +1321,10 @@
 		}
 		if ($conn->query($sql) === TRUE) {
 			$bookId = $conn->insert_id;
-			foreach ($_POST['authors'] as $author) {
-				addWrittenBy($bookId, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
+			if (isset($_POST['authors'])) {
+				foreach ($_POST['authors'] as $author) {
+					addWrittenBy($bookId, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
+				}
 			}
 			$_POST['bookid']=$bookId;
 			$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookid.".jpg' WHERE BookID=".$bookid;
@@ -1561,8 +1563,10 @@
 
 		removeAllWrittenBy($id);
 
-		foreach ($_POST['authors'] as $author) {
-			addWrittenBy($id, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
+		if (isset($_POST['authors'])) {
+			foreach ($_POST['authors'] as $author) {
+				addWrittenBy($id, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
+			}
 		}
 
 		$title = str_replace("'", "\'", $_POST['title']);
