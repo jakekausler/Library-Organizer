@@ -1141,10 +1141,10 @@
 			$_POST['sort'] = 'dewey';
 		}
 		if (!isset($_POST['number-to-get'])) {
-			$_POST['number-to-get'] = 2000;
+			$_POST['number-to-get'] = 50;
 		}
 		if (intval($_POST['number-to-get'])<=0) {
-			$_POST['number-to-get'] = 2000;
+			$_POST['number-to-get'] = 50;
 		}
 		if (!isset($_POST['filter'])) {
 			$_POST['filter'] = '';
