@@ -422,7 +422,7 @@
 		var mn = prompt("Enter the person's middle names, separtated by semicolons");
 		var ln = prompt("Enter the person's last name");
 		var role = prompt("Enter the person's role");
-		var author = '<div class=authorname"><li><span class="firstname">'+fn+' <span class="middlenames">';
+		var author = '<div class=authorname"><li><span class="firstname">'+fn+'</span> <span class="middlenames">';
 		mn.split(';').forEach(function(name){
 			author += name + ' ';
 		});
