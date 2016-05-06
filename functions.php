@@ -1315,7 +1315,7 @@
 		$original=str_replace("'", "\'", addLanguage($original));
 
 		$sql = "INSERT INTO books (Title, Subtitle, Copyright, PublisherID, IsRead, IsReference, IsOwned, IsShipping, IsReading, ISBN, LoaneeFirst, LoaneeLast, Dewey, Pages, Width, Height, Depth, Weight, PrimaryLanguage, SecondaryLanguage, OriginalLanguage, Series, Volume, Format, Edition, ImageURL)".
-				"VALUES ('".$title."', ".($subtitle=='NULL'?$subtitle:"'".$subtitle."'").", ".($copyright=='NULL'?$copyright:"'".$copyright."'").", ".$pubid.", ".$read.", ".$reference.", ".$owned.", ".$shipping.", ".$reading.", ".($isbn=='NULL'?$isbn:"'".$isbn."'").", ".$loaneefirst.", ".$loaneelast.", ".($dewey=='NULL'?$dewey:"'".$dewey."'").", ".$pages.", ".$width.", ".$height.", ".$depth.", ".$weight.", ".($primary=='NULL'?$primary:"'".$primary."'").", ".($secondary=='NULL'?$secondary:"'".$secondary."'").", ".($original=='NULL'?$original:"'".$original."'").", ".($series=='NULL'?$series:"'".$series."'").", ".$volume.", ".($format=='NULL'?$format:"'".$format."'").", ".$edition.", '".$imageurl."')";
+				"VALUES ('".$title."', ".($subtitle=='NULL'?$subtitle:"'".$subtitle."'").", ".($copyright=='NULL'?$copyright:"'".$copyright."'").", ".$pubid.", ".$read.", ".$reference.", ".$owned.", ".$shipping.", ".$reading.", ".($isbn=='NULL'?$isbn:"'".$isbn."'").", ".($loaneefirst=='NULL'?$loaneefirst:"'".$loaneefirst."'").", ".($loaneelast=='NULL'?$loaneelast:"'".$loaneelast."'").", ".($dewey=='NULL'?$dewey:"'".$dewey."'").", ".$pages.", ".$width.", ".$height.", ".$depth.", ".$weight.", ".($primary=='NULL'?$primary:"'".$primary."'").", ".($secondary=='NULL'?$secondary:"'".$secondary."'").", ".($original=='NULL'?$original:"'".$original."'").", ".($series=='NULL'?$series:"'".$series."'").", ".$volume.", ".($format=='NULL'?$format:"'".$format."'").", ".$edition.", '".$imageurl."')";
 		while (strpos($sql, '\\\\')) {
 			$sql = str_replace('\\\\', '\\', $sql);
 		}
@@ -1609,8 +1609,8 @@
 				", IsShipping=".$shipping.
 				", IsReading=".$reading.
 				", isbn=".($isbn=='NULL'?$isbn:"'".$isbn."'").
-				", LoaneeFirst=".$loaneefirst.
-				", LoaneeLast=".$loaneelast.
+				", LoaneeFirst=".($loaneefirst=='NULL'?$loaneefirst:"'".$loaneefirst."'").
+				", LoaneeLast=".($loaneelast=='NULL'?$loaneelast:"'".$loaneelast."'").
 				", Dewey=".($dewey=='NULL'?$dewey:"'".$dewey."'").
 				", Pages=".$pages.
 				", Width=".$width.
