@@ -848,9 +848,9 @@
 		}
 		$sql = "SELECT * FROM (
 				(SELECT AVG(Width) As AvgWidth, MIN(Width) AS MinWidth, MAX(Width) AS MaxWidth FROM books WHERE Width>0) AS w,
-    			(SELECT AVG(Height) As AvgHeight, MIN(Height) AS MinHeight, MAX(Height) AS MaxHeight FROM books WHERE Height>0) AS h,
-    			(SELECT AVG(Depth) As AvgDepth, MIN(Depth) AS MinDepth, MAX(Depth) AS MaxDepth FROM books WHERE Depth>0) AS d,
-    			(SELECT AVG(Weight) As AvgWeight, MIN(Weight) AS MinWeight, MAX(Weight) AS MaxWeight FROM books WHERE Weight>0) AS we)";
+				(SELECT AVG(Height) As AvgHeight, MIN(Height) AS MinHeight, MAX(Height) AS MaxHeight FROM books WHERE Height>0) AS h,
+				(SELECT AVG(Depth) As AvgDepth, MIN(Depth) AS MinDepth, MAX(Depth) AS MaxDepth FROM books WHERE Depth>0) AS d,
+				(SELECT AVG(Weight) As AvgWeight, MIN(Weight) AS MinWeight, MAX(Weight) AS MaxWeight FROM books WHERE Weight>0) AS we)";
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
@@ -1806,5 +1806,59 @@
 		$retval = $retval . 	'<input type="hidden" name="todewey" value="'.$_POST['todewey'].'">';
 		$retval = $retval . 	'<input type="hidden" name="currentid" value="'.$_POST['currentid'].'">';
 		return $retval;
+	}
+	function exportBooks() {
+		$conn = getConnection();
+		if ($conn->connect_errno>0) {
+			die("Connection failed: " . $conn->connect_error);
+		}
+		$sql = "SELECT * FROM books";
+		$result = $conn->query($sql);
+		if (!$result) {
+			die("Query failed: " . $conn->error);
+		}
+		$num_fields = $result->field_count;
+		$headers = array();
+		for ($i=0; $i < $num_fields; $i++) {
+			$headers[] = $result->fetch_field()->name;
+		}
+		$fp = fopen('php://output', 'w');
+		if ($fp && $result) {
+			header('Content-Type: text/csv');
+			header('Content-Disposition: attachment; filename="export.csv"');
+			header('Pragma: no-cache');
+			header('Expires: 0');
+			fputcsv($fp, $headers);
+			while ($row = $result->fetch_array(MYSQLI_NUM)) {
+				fputcsv($fp, array_values($row));
+			}
+		}
+	}
+	function exportAuthors() {
+		$conn = getConnection();
+		if ($conn->connect_errno>0) {
+			die("Connection failed: " . $conn->connect_error);
+		}
+		$sql = "SELECT BookID, FirstName, MiddleNames, LastName, Role from written_by JOIN persons on written_by.AuthorID=persons.PersonID";
+		$result = $conn->query($sql);
+		if (!$result) {
+			die("Query failed: " . $conn->error);
+		}
+		$num_fields = $result->field_count;
+		$headers = array();
+		for ($i=0; $i < $num_fields; $i++) {
+			$headers[] = $result->fetch_field()->name;
+		}
+		$fp = fopen('php://output', 'w');
+		if ($fp && $result) {
+			header('Content-Type: text/csv');
+			header('Content-Disposition: attachment; filename="export.csv"');
+			header('Pragma: no-cache');
+			header('Expires: 0');
+			fputcsv($fp, $headers);
+			while ($row = $result->fetch_array(MYSQLI_NUM)) {
+				fputcsv($fp, array_values($row));
+			}
+		}
 	}
 ?>
