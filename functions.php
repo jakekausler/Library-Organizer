@@ -211,7 +211,7 @@
 			$retval = $retval . '<input type="hidden" name="bookid" value="'.$id.'" />';
 			$retval = $retval .	'<div class="grid-book" onclick="openEditor(\'grid-'.$id.'\')">';
 			$retval = $retval . 	'<div class="book-image">';
-			$retval = $retval . 		'<img src="'.($book['ImageURL']==''?'http://i.istockimg.com/file_thumbview_approve/64101897/5/stock-photo-64101897-blank-book-cover-empty-template-single-brochure-textbook.jpg':$book['ImageURL']).'" alt="'.$book['Title'].'"></img>';
+			$retval = $retval . 		'<img src="'.($book['ImageURL']==''?'':$book['ImageURL']).'" alt="'.$book['Title'].'"></img>';
 			$retval = $retval .		'</div> ';
 			$retval = $retval .		'<div class="book-maininfo">';
 			$retval = $retval .			'<div class="book-title">'.$book['Title'].'</div>';
@@ -1628,6 +1628,7 @@
 				", Volume=".$volume.
 				", Format=".($format=='NULL'?$format:"'".$format."'").
 				", Edition=".$edition.
+				", ImageURL='res/bookimages/".$id.".jpg'".
 				" WHERE BookId=".$id;
 		while (strpos($sql, '\\\\')) {
 			$sql = str_replace('\\\\', '\\', $sql);
