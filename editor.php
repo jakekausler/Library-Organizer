@@ -106,14 +106,13 @@
 						echo makeAuthorBox($_POST['bookid']);
 					?>
 					<div id="editor-author-buttons">
-						<button type="button" onclick="addAuthor()" disabled>
+						<button type="button" onclick="addAuthor()">
 							Add
 						</button
-						><button type="button" onclick="removeAuthor()" disabled>
+						><button type="button" onclick="removeAuthor()">
 							Remove
 						</button>
 					</div>
-					<input type="hidden" name="authors" value="" />
 				</div>
 				<div id="editor-edition-info" class="editor-area">
 					<div class="editor-header">Edition Information</div>
@@ -232,7 +231,10 @@
 						<div class="entry"><label>ISBN:</label><input name="isbn" id="isbn-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['ISBN']).'"'?> /></div>
 					</div>
 					<div id="editor-loanee">
-						<div class="entry"><label>Loanee:</label><input name="loanee" id="loanee-entry" type="text" value=<?php echo '"'.($book==NULL?'':stringPerson(getPerson($book['LoaneeID']))).'"'?> /></div>
+						<div class="entry">
+							<div><label>Loanee First:</label><input name="loaneefirst" id="loanee-first-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['LoaneeFirst']).'"'?> /></div>
+							<div><label>Loanee Last:</label><input name="loaneelast" id="loanee-last-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['LoaneeLast']).'"'?> /></div>
+						</div>
 					</div>
 					<div id="editor-checkboxes">
 						<div id="editor-read">
@@ -265,11 +267,24 @@
 		if (<?php echo ($book==NULL?'false':'true'); ?>) {
 			selectCorrect();
 		}
+		if (<?php echo ($book==NULL?'false':'true'); ?>) {
+			makeAuthorSelect();
+		}
 		<?php
 		if (isset($GLOBALS['alert-message'])) {
 			echo "alert('".$GLOBALS['alert-message']."');";
 		}
 		?>
+	}
+	function makeAuthorSelect() {
+		$('.author-box').children().each(function(i, item){$(item).click(function(){selectAuthor(i)})});
+		if ($('.author-box').children().length > 0) {
+			selectAuthor(0);
+		}
+	}
+	function selectAuthor(index) {
+		$('.author-box').children().each(function(i, item){$(item).removeClass('author-selected')});
+		$($('.author-box').children()[index]).addClass('author-selected');
 	}
 	function selectCorrect() {
 		var seriesSelect = document.getElementById("series-select");
@@ -356,6 +371,25 @@
 			input.setAttribute("name", "previouspage");
 			input.setAttribute("value", <?php echo '"'.$_POST['previouspage'].'"';?>);
 			document.getElementById("editor-form").appendChild(input);
+			$('.author-box').children().each(function(i, item){
+				input = document.createElement("input");
+				input.setAttribute('name', 'authors['+i+'][firstname]');
+				input.setAttribute('value', $(item).find('.firstname').text());
+				document.getElementById("editor-form").appendChild(input);
+				input = document.createElement("input");
+				input.setAttribute('name', 'authors['+i+'][middlenames]');
+				input.setAttribute('value', $(item).find('.middlenames').text());
+				document.getElementById("editor-form").appendChild(input);
+				input = document.createElement("input");
+				input.setAttribute('name', 'authors['+i+'][lastname]');
+				input.setAttribute('value', $(item).find('.lastname').text());
+				document.getElementById("editor-form").appendChild(input);
+				input = document.createElement("input");
+				input.setAttribute('name', 'authors['+i+'][role]');
+				input.setAttribute('value', $(item).find('.role').text());
+				document.getElementById("editor-form").appendChild(input);
+			});
+			console.log(document.getElementById("editor-form"));
 			document.getElementById("editor-form").setAttribute("action", "editor.php");
 			document.getElementById("editor-form").submit();
 		}
@@ -384,10 +418,23 @@
 		return prompt("Enter the image url:");
 	}
 	function addAuthor() {
-		return false;
+		var fn = prompt("Enter the person's first name");
+		var mn = prompt("Enter the person's middle names, separtated by semicolons");
+		var ln = prompt("Enter the person's last name");
+		var role = prompt("Enter the person's role");
+		var author = '<div class=authorname"><li><span class="firstname">'+fn+' <span class="middlenames">';
+		mn.split(';').forEach(function(name){
+			author += name + ' ';
+		});
+		author += '</span><span class="lastname">'+ln+'</span>: <span class="role">'+role+'</span></div>';
+		$('.author-box').append(author);
+		$('.author-box :last-child').click(function(){selectAuthor($('.author-box').children().length-1)});
 	}
 	function removeAuthor() {
-		return false;
+		$('.author-selected').remove();
+		if ($('.author-box').children().length > 0) {
+			selectAuthor(0);
+		}
 	}
 	function chooseOption(fieldName) {
 		var selection = document.getElementById(fieldName+'-select').value;

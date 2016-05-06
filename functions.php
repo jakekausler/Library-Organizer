@@ -1,9 +1,9 @@
 <?php
 	class Database {
-		private static $servername = '';
-		private static $username = '';
-		private static $password = '';
-		private static $dbname = '';
+		private static $servername = 'localhost';
+		private static $username = 'jakekaus_root';
+		private static $password = 'Jake021f2f1!';
+		private static $dbname = 'jakekaus_library';
 		private static $db;
 		private $connection;
 		private function __construct() {
@@ -74,7 +74,7 @@
 		$read = ($_POST['read']=='both'?"":($_POST['read']=='yes'?"IsRead="."1":"IsRead="."0"));
 		$reference = ($_POST['reference']=='both'?"":($_POST['reference']=='yes'?"IsReference="."1":"IsReference="."0"));
 		$owned = ($_POST['owned']=='both'?"":($_POST['owned']=='yes'?"IsOwned="."1":"IsOwned="."0"));
-		$loaned = ($_POST['loaned']=='both'?"":($_POST['loaned']=='yes'?"LoaneeID IS NOT "."NULL":"LoaneeID IS "."NULL"));
+		$loaned = ($_POST['loaned']=='both'?"":($_POST['loaned']=='yes'?"LoaneeFirst IS NOT NULL OR LoaneeLast IS NOT NULL":"LoaneeFirst IS NULL AND LoaneeLast IS NULL"));
 		$reading = ($_POST['reading']=='both'?"":($_POST['reading']=='yes'?"IsReading="."1":"IsReading="."0"));
 		$shipping = ($_POST['shipping']=='both'?"":($_POST['shipping']=='yes'?"IsShipping="."1":"IsShipping="."0"));
 		$startDewey = 'Dewey >= "'.formatDewey($_POST['fromdewey']).'"';
@@ -302,8 +302,13 @@
 			$retval = $retval .			'<div class="book-owned-info">';
 			$retval = $retval .				'<span class="book-owned">'.($book['IsOwned']=='1'?'':'Not').'</span> Owned';
 			$retval = $retval .			'</div>';
+			if ($book['LoaneeFirst'] != '' or $book['LoaneeLast'] != '') {
+			$retval = $retval .			'<div class="book-loanee-info">';
+			$retval = $retval .				'<span class="book-loanee">Loaned to: '.$book['LoaneeFirst'].' '.$book['LoaneeLast'].'</span>';
+			$retval = $retval .			'</div>';
+			}
 			$retval = $retval .			'<div class="book-id-info">';
-			$retval = $retval .				'<span class="book-id">'.$book['BookID'].'</span>';
+			$retval = $retval .				'<span class="book-id">Book Id: '.$book['BookID'].'</span>';
 			$retval = $retval .			'</div>';
 			$retval = $retval .		'</div>';
 			$retval = $retval .	'</div></form>';
@@ -358,11 +363,11 @@
 		$i=0;
 		$authorBox = '<div class="author-box">';
 		while (($i<$limit || $limit==-1) && $i<count($authors)) {
-			$authorBox = $authorBox . '<div class="author-name"><li>'.$authors[$i]['FirstName'].' ';
+			$authorBox = $authorBox . '<div class="authorname"><li><span class="firstname">'.$authors[$i]['FirstName'].'</span> <span class="middlenames">';
 			foreach (explode(';',$authors[$i]['MiddleNames']) as $mn) {
 				$authorBox = $authorBox.$mn.' ';
 			}
-			$authorBox = $authorBox.$authors[$i]['LastName'].': '.$authors[$i]['Role'].'</li></div>';
+			$authorBox = $authorBox.'</span><span class="lastname">'.$authors[$i]['LastName'].'</span>: <span class="role">'.$authors[$i]['Role'].'</span></li></div>';
 			$i+=1;
 		}
 		return $authorBox.'</div>';
@@ -693,7 +698,7 @@
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
-		$sql = "SELECT COUNT(*) AS Count FROM books WHERE LoaneeID IS NOT NULL AND BookID IN (".$idstring.")";
+		$sql = "SELECT COUNT(*) AS Count FROM books WHERE (LoaneeFirst IS NOT NULL OR LoaneeLast IS NOT NULL) AND BookID IN (".$idstring.")";
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
@@ -1294,7 +1299,6 @@
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
-		$loanee = parsePerson($_POST['loanee']);
 
 		$title = str_replace("'", "\'", $_POST['title']);
 		$subtitle = $_POST['subtitle']==''?'NULL':str_replace("'", "\'", $_POST['subtitle']);
@@ -1306,7 +1310,8 @@
 		$reading = (isset($_POST['isreading']) && $_POST['isreading']=='1')?'1':'0';
 		$shipping = (isset($_POST['isshipping']) && $_POST['isshipping']=='1')?'1':'0';
 		$isbn = $_POST['isbn']==''?'NULL':$_POST['isbn'];
-		$loaneeid = addOrGetPerson(str_replace("'", "\'", $loanee[0]), str_replace("'", "\'", $loanee[1]), str_replace("'", "\'", $loanee[2]));
+		$loaneefirst = $_POST['loaneefirst']==''?'NULL':str_replace("'", "\'", $_POST['loaneefirst']);
+		$loaneelast = $_POST['loaneelast']==''?'NULL':str_replace("'", "\'", $_POST['loaneelast']);
 		$dewey = $_POST['dewey']==''?'':formatDewey($_POST['dewey']);
 		$pages = $_POST['pages'];
 		$width = $_POST['width'];
@@ -1328,33 +1333,33 @@
 		$secondary=str_replace("'", "\'", addLanguage($secondary));
 		$original=str_replace("'", "\'", addLanguage($original));
 
-		$sql = "INSERT INTO books (Title, Subtitle, Copyright, PublisherID, IsRead, IsReference, IsOwned, IsShipping, IsReading, ISBN, LoaneeID, Dewey, Pages, Width, Height, Depth, Weight, PrimaryLanguage, SecondaryLanguage, OriginalLanguage, Series, Volume, Format, Edition, ImageURL)".
-				"VALUES ('".$title."', ".($subtitle=='NULL'?$subtitle:"'".$subtitle."'").", ".($copyright=='NULL'?$copyright:"'".$copyright."'").", ".$pubid.", ".$read.", ".$reference.", ".$owned.", ".$shipping.", ".$reading.", ".($isbn=='NULL'?$isbn:"'".$isbn."'").", ".$loaneeid.", ".($dewey=='NULL'?$dewey:"'".$dewey."'").", ".$pages.", ".$width.", ".$height.", ".$depth.", ".$weight.", ".($primary=='NULL'?$primary:"'".$primary."'").", ".($secondary=='NULL'?$secondary:"'".$secondary."'").", ".($original=='NULL'?$original:"'".$original."'").", ".($series=='NULL'?$series:"'".$series."'").", ".$volume.", ".($format=='NULL'?$format:"'".$format."'").", ".$edition.", '".$imageurl."')";
+		$sql = "INSERT INTO books (Title, Subtitle, Copyright, PublisherID, IsRead, IsReference, IsOwned, IsShipping, IsReading, ISBN, LoaneeFirst, LoaneeLast, Dewey, Pages, Width, Height, Depth, Weight, PrimaryLanguage, SecondaryLanguage, OriginalLanguage, Series, Volume, Format, Edition, ImageURL)".
+				"VALUES ('".$title."', ".($subtitle=='NULL'?$subtitle:"'".$subtitle."'").", ".($copyright=='NULL'?$copyright:"'".$copyright."'").", ".$pubid.", ".$read.", ".$reference.", ".$owned.", ".$shipping.", ".$reading.", ".($isbn=='NULL'?$isbn:"'".$isbn."'").", ".$loaneefirst.", ".$loaneelast.", ".($dewey=='NULL'?$dewey:"'".$dewey."'").", ".$pages.", ".$width.", ".$height.", ".$depth.", ".$weight.", ".($primary=='NULL'?$primary:"'".$primary."'").", ".($secondary=='NULL'?$secondary:"'".$secondary."'").", ".($original=='NULL'?$original:"'".$original."'").", ".($series=='NULL'?$series:"'".$series."'").", ".$volume.", ".($format=='NULL'?$format:"'".$format."'").", ".$edition.", '".$imageurl."')";
 		while (strpos($sql, '\\\\')) {
 			$sql = str_replace('\\\\', '\\', $sql);
 		}
 		if ($conn->query($sql) === TRUE) {
 			$bookId = $conn->insert_id;
-			foreach (explode(';', $_POST['authors']) as $author) {
-				addAuthor($author, $bookid);
+			foreach ($_POST['authors'] as $author) {
+				addWrittenBy($bookId, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
 			}
 			$_POST['bookid']=$bookId;
 			$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookid.".jpg' WHERE BookID=".$bookid;
 			if ($conn->query($sql) !== TRUE) {
 				return "Error: " . $sql . "<br>" . $conn->error;
 			}
-			// if ($_POST['imageurl'] != '') {
-			// 	$out = 'res/bookimages/'.$bookid.'.jpg';
-			// 	$contents = file_get_contents($_POST['imageurl']);
-			// 	if ($contents) {
-			// 		$byteCount = file_put_contents($out, $contents);
-			// 		if (!$byteCount) {
-			// 			return "Error: " . "Unable to get image";
-			// 		}
-			// 	} else {
-			// 		return "Error: " . "Unable to get image";
-			// 	}
-			// }
+			if ($_POST['imageurl'] != '') {
+				$out = 'res/bookimages/'.$bookid.'.jpg';
+				$contents = file_get_contents($_POST['imageurl']);
+				if ($contents) {
+					$byteCount = file_put_contents($out, $contents);
+					if (!$byteCount) {
+						return "Error: " . "Unable to get image";
+					}
+				} else {
+					return "Error: " . "Unable to get image";
+				}
+			}
 		} else {
 			return "Error: " . $sql . "<br>" . $conn->error;
 		}
@@ -1559,12 +1564,25 @@
 			$conn->query($sql);
 		}
 	}
+	function removeAllWrittenBy($bookid) {
+		$conn = getConnection();
+		if ($conn->connect_errno>0) {
+			return die("Connection failed: " . $conn->connect_error);
+		}
+		$sql = "DELETE FROM written_by WHERE BookId='".$bookid."'";
+		$conn->query($sql);
+	}
 	function updateBook($id) {
 		$conn = getConnection();
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
-		$loanee = parsePerson($_POST['loanee']);
+
+		removeAllWrittenBy($id);
+
+		foreach ($_POST['authors'] as $author) {
+			addWrittenBy($id, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
+		}
 
 		$title = str_replace("'", "\'", $_POST['title']);
 		$subtitle = $_POST['subtitle']==''?'NULL':str_replace("'", "\'", $_POST['subtitle']);
@@ -1576,7 +1594,8 @@
 		$reading = (isset($_POST['isreading']) && $_POST['isreading']=='1')?'1':'0';
 		$shipping = (isset($_POST['isshipping']) && $_POST['isshipping']=='1')?'1':'0';
 		$isbn = $_POST['isbn']==''?'NULL':$_POST['isbn'];
-		$loaneeid = addOrGetPerson(str_replace("'", "\'", $loanee[0]), str_replace("'", "\'", $loanee[1]), str_replace("'", "\'", $loanee[2]));
+		$loaneefirst = $_POST['loaneefirst']==''?'NULL':str_replace("'", "\'", $_POST['loaneefirst']);
+		$loaneelast = $_POST['loaneelast']==''?'NULL':str_replace("'", "\'", $_POST['loaneelast']);
 		$dewey = $_POST['dewey']==''?'':formatDewey($_POST['dewey']);
 		$pages = $_POST['pages'];
 		$width = $_POST['width'];
@@ -1609,7 +1628,8 @@
 				", IsShipping=".$shipping.
 				", IsReading=".$reading.
 				", isbn=".($isbn=='NULL'?$isbn:"'".$isbn."'").
-				", LoaneeID=".$loaneeid.
+				", LoaneeFirst=".$loaneefirst.
+				", LoaneeLast=".$loaneelast.
 				", Dewey=".($dewey=='NULL'?$dewey:"'".$dewey."'").
 				", Pages=".$pages.
 				", Width=".$width.
@@ -1628,18 +1648,18 @@
 			$sql = str_replace('\\\\', '\\', $sql);
 		}
 		if ($conn->query($sql) === TRUE) {
-			// if ($_POST['imageurl'] != '') {
-			// 	$out = 'res/bookimages/'.$id.'.jpg';
-			// 	$contents = file_get_contents($_POST['imageurl']);
-			// 	if ($contents) {
-			// 		$byteCount = file_put_contents($out, $contents);
-			// 		if (!$byteCount) {
-			// 			return "Error: " . "Unable to get image";
-			// 		}
-			// 	} else {
-			// 		return "Error: " . "Unable to get image";
-			// 	}
-			// }
+			if ($_POST['imageurl'] != '') {
+				$out = 'res/bookimages/'.$id.'.jpg';
+				$contents = file_get_contents($_POST['imageurl']);
+				if ($contents) {
+					$byteCount = file_put_contents($out, $contents);
+					if (!$byteCount) {
+						return "Error: " . "Unable to get image";
+					}
+				} else {
+					return "Error: " . "Unable to get image";
+				}
+			}
 			return null;
 		} else {
 			return "Error: " . $sql . "<br>" . $conn->error;
