@@ -75,11 +75,11 @@
 						</label
 							><input id="number-to-get" class="pagination-input" type="text" name="number-to-get" value=<?php echo '"'.$_POST['number-to-get'].'"'?>/>
 					</div>
-					<div id="Page Navigation" class="sort-group">
-						<label id="number-to-get-label">
+					<div id="page" class="sort-group">
+						<label id="page-label">
 							Page
 						</label
-							><input id="page" class="pagination-input" type="text" name="page" value=<?php echo '"'.$_POST['page'].'"'?>/>
+							><input id="page" class="pagination-input" type="text" name="page" value=<?php echo '"'.$_POST['page'].'"'?>/> of <?php echo countPages(intval($_POST['number-to-get']));?>
 					</div>
 					<div id="from-dewey" class="sort-group">
 						<label id="from-dewey-label">
