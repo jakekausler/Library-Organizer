@@ -25,6 +25,20 @@
 				<button id="export-return-button" class="export-control-button">
 					Return
 				</button>
+			</form
+			><form action="exportpage.php" method="post" target="_blank">
+				<?php echo makeInputFields(); ?>
+				<input type="hidden" name="export-action" value="books" />
+				<button id="export-books-button" class="export-control-button">
+					Export Books
+				</button>
+			</form
+			><form action="exportpage.php" method="post" target="_blank">
+				<?php echo makeInputFields(); ?>
+				<input type="hidden" name="export-action" value="authors" />
+				<button id="export-authors-button" class="export-control-button">
+					Export Authors
+				</button>
 			</form>
 		</div>
 	</div>
