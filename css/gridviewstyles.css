@@ -10,14 +10,25 @@
 .grid-view-entry {
 	border-radius: 20px;
 	position: relative;
-	width: 21%;
-	margin: 2% 2% 2% 2%;
 	float: left;
 	height: 200px;
 	cursor: pointer;
 	background: #718EA4;
 	box-shadow: inset 4px -6px 6px rgba(0,0,0,0.5), /*bottom internal shadow*/
 	inset 4px 6px 6px rgba(255,255,255,0.5); /*top internal highlight*/
+}
+
+@media only screen and (max-device-width: 480px) {
+	.grid-view-entry {
+		width: 21%;
+		margin: 2%;
+	}
+}
+@media only screen and (min-device-width: 481px) {
+	.grid-view-entry {
+		width: 8%;
+		margin: 1%;
+	}
 }
 
 .grid-view-entry-picture {
