@@ -1055,73 +1055,87 @@
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">General:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-general" class="substats">';
-		$statsDiv = $statsDiv .			'<label>Books:</label><span class="stat">'.$stats['Books'].'</span>';
-		$statsDiv = $statsDiv .			'<label>Series:</label><span class="stat">'.$stats['Series'].'</span>';
-		$statsDiv = $statsDiv .			'<label>Publishers:</label><span class="stat">'.$stats['Publishers'].'</span>';
-		$statsDiv = $statsDiv .			'<label>Deweys:</label><span class="stat">'.$stats['Deweys'].'</span>';
-		$statsDiv = $statsDiv .			'<label>Read:</label><span class="stat">'.$stats['Read'].' ('.round($stats['Read']/$stats['Books']*100, 2).'%)'.'</span>';
-		$statsDiv = $statsDiv .			'<label>Reading:</label><span class="stat">'.$stats['Reading'].' ('.round($stats['Reading']/$stats['Books']*100, 2).'%)'.'</span>';
-		$statsDiv = $statsDiv .			'<label>Reference:</label><span class="stat">'.$stats['Reference'].' ('.round($stats['Reference']/$stats['Books']*100, 2).'%)'.'</span>';
-		$statsDiv = $statsDiv .			'<label>On Loan:</label><span class="stat">'.$stats['OnLoan'].' ('.round($stats['OnLoan']/$stats['Books']*100, 2).'%)'.'</span>';
-		$statsDiv = $statsDiv .			'<label>Shipping:</label><span class="stat">'.$stats['Shipping'].' ('.round($stats['Shipping']/$stats['Books']*100, 2).'%)'.'</span>';
+		$statsDiv = $statsDiv .		'<table>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Books:</span></td><td><span class="stat">'.$stats['Books'].'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Series:</span></td><td><span class="stat">'.$stats['Series'].'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Publishers:</span></td><td><span class="stat">'.$stats['Publishers'].'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Deweys:</span></td><td><span class="stat">'.$stats['Deweys'].'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Read:</span></td><td><span class="stat">'.$stats['Read'].' ('.round($stats['Read']/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Reading:</span></td><td><span class="stat">'.$stats['Reading'].' ('.round($stats['Reading']/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Reference:</span></td><td><span class="stat">'.$stats['Reference'].' ('.round($stats['Reference']/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">On Loan:</span></td><td><span class="stat">'.$stats['OnLoan'].' ('.round($stats['OnLoan']/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
+		$statsDiv = $statsDiv .			'<tr><td><span class="stat-label">Shipping:</span></td><td><span class="stat">'.$stats['Shipping'].' ('.round($stats['Shipping']/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">Formats:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-formats" class="substats">';
+		$statsDiv = $statsDiv .		'<table>';
 		foreach ($stats['Formats'] as $format => $val) {
 			if ($val>0) {
-				$statsDiv = $statsDiv .		'<label>'.$format.':</label><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span>';
+				$statsDiv = $statsDiv .		'<tr><td><span class="stat-label">'.$format.':</span></td><td><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
 			}
 		}
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">Primary Languages:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-primary" class="substats">';
+		$statsDiv = $statsDiv .		'<table>';
 		foreach ($stats['Languages']['Primary'] as $language => $val) {
 			if ($val>0) {
-				$statsDiv = $statsDiv .		'<label>'.$language.':</label><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span>';
+				$statsDiv = $statsDiv .		'<tr><td><span class="stat-label">'.$language.':</span></td><td><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
 			}
 		}
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">Secondary Languages:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-secondary" class="substats">';
+		$statsDiv = $statsDiv .		'<table>';
 		foreach ($stats['Languages']['Secondary'] as $language => $val) {
 			if ($val>0) {
-				$statsDiv = $statsDiv .		'<label>'.$language.':</label><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span>';
+				$statsDiv = $statsDiv .		'<tr><td><span class="stat-label">'.$language.':</span></td><td><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
 			}
 		}
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">Original Languages:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-original" class="substats" class="substats">';
+		$statsDiv = $statsDiv .		'<table>';
 		foreach ($stats['Languages']['Original'] as $language => $val) {
 			if ($val>0) {
-				$statsDiv = $statsDiv .		'<label>'.$language.':</label><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span>';
+				$statsDiv = $statsDiv .		'<tr><td><span class="stat-label">'.$language.':</span></td><td><span class="stat">'.$val.' ('.round($val/$stats['Books']*100, 2).'%)'.'</span></td></tr>';
 			}
 		}
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">Roles:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-roles" class="substats">';
+		$statsDiv = $statsDiv .		'<table>';
 		foreach ($stats['Roles'] as $role => $val) {
 			if ($val>0) {
-				$statsDiv = $statsDiv .		'<label>'.$role.':</label><span class="stat">'.$val.'</span>';
+				$statsDiv = $statsDiv .		'<tr><td><span class="stat-label">'.$role.':</span></td><td><span class="stat">'.$val.'</span></td></tr>';
 			}
 		}
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'<div class="stat-group">';
 		$statsDiv = $statsDiv .		'<div><label class="heading">Dimensions:</label></div>';
 		$statsDiv = $statsDiv .		'<div id="statistics-dimensions" class="substats">';
+		$statsDiv = $statsDiv .		'<table>';
 		foreach ($stats['Dimensions'] as $dimension => $val) {
-			$statsDiv = $statsDiv .		'<label>'.$dimension.':</label><span class="stat">'.$val.'</span>';
+			$statsDiv = $statsDiv .		'<tr><td><span class="stat-label">'.$dimension.':</span></td><td><span class="stat">'.$val.'</span></td></tr>';
 		}
+		$statsDiv = $statsDiv .		'</table>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .		'</div>';
 		$statsDiv = $statsDiv .	'</div>';

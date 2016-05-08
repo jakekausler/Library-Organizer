@@ -44,14 +44,8 @@
 	box-shadow: inset 4px -6px 6px rgba(0,0,0,0.5), /*bottom internal shadow*/
 	inset 4px 6px 6px rgba(255,255,255,0.5); /*top internal highlight*/
 }
-#statistics label {
-	display: inline-block;
-	float: left;
-	clear: left;
-	width: 78%;
-	border: 1px #123652;
-	border-style: none none solid none;
-	padding: 1%;
+#statistics .stat-label {
+	margin-left: 1%;
 }
 #statistics .heading {
 	margin-bottom: 1%;
@@ -59,19 +53,26 @@
 	font-size: larger;
 	font-weight: bold;
 }
-#statistics .stat{
-	padding: 1%;
-	display: inline-block;
-	float: left;
-	width: 18%;
+table {
 	border: 1px #123652;
-	border-style: none none solid none;
+	border-collapse: collapse;
+	border-style: none solid none solid;
+	margin-left: 2%;
+	margin-top: 1%;
+	width: 96%;
+}
+tr {
+	height: 30px;
+}
+td {
+	border-collapse: collapse;
+	border: 1px #123652;
+	border-style: solid none solid none;
+}
+#statistics .stat{
+	text-align: right;
+	float: right;
+	margin-right: 1%;
 }
 #statistics .substats{
-	display: block;
-	margin-left: 2%;
-	border: 1px #123652;
-	border-style: solid solid none solid;
-	float: left;
-	width: 96%
 }
