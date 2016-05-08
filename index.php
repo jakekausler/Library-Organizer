@@ -191,12 +191,12 @@
 			</button>
 		</div>
 	</div>
-	<div id="grid" style="-webkit-overflow-scrolling: touch; visibility: hidden;">
+	<div id="grid" style="-webkit-overflow-scrolling: touch; visibility: hidden; display: none;">
 	<?php
 		echo makeBookGrid();
 	?>
 	</div>
-	<div id="grid-view" style="-webkit-overflow-scrolling: touch; visibility: hidden;">
+	<div id="grid-view" style="-webkit-overflow-scrolling: touch; visibility: hidden; display: none;">
 	<?php
 		echo makeBookGridView();
 	?>
@@ -207,6 +207,14 @@
 	<?php
 		echo makeEditorForm();
 	?>
+	<div id="page-navigation">
+		<button <?php echo intval($_POST['page'])==1?'disabled':''; ?> onclick=<?php echo "previousPage(".intval($_POST['page']).")";?>>
+			Previous Page
+		</button
+		><button <?php echo intval($_POST['page'])==countPages(intval($_POST['number-to-get']))?'disabled':''; ?> onclick=<?php echo "nextPage(".intval($_POST['page']).")";?>>
+			Next Page
+		</button>
+	</div>
 </body>
 <script type="text/javascript">
 	<?php
@@ -253,11 +261,13 @@
 		hideall();
 		$('#viewInput').attr('value', 'list');
 		$('#grid').css('visibility', 'visible');
+		$('#grid').css('display', 'block');
 	}
 	function viewGrid() {
 		hideall();
 		$('#viewInput').attr('value', 'grid');
 		$('#grid-view').css('visibility', 'visible');
+		$('#grid-view').css('display', 'block');
 	}
 	function viewShelf() {
 		hideall();
@@ -266,6 +276,8 @@
 	}
 	function hideall() {
 		$('#grid').css('visibility', 'hidden');
+		$('#grid').css('display', 'none');
 		$('#grid-view').css('visibility', 'hidden');
+		$('#grid-view').css('display', 'none');
 	}
 </script>
