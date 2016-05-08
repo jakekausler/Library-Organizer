@@ -75,7 +75,7 @@
 						</label
 							><input id="number-to-get" class="pagination-input" type="text" name="number-to-get" value=<?php echo '"'.$_POST['number-to-get'].'"'?>/>
 					</div>
-					<div id="page" class="sort-group">
+					<div id="page-group" class="sort-group">
 						<label id="page-label">
 							Page
 						</label
