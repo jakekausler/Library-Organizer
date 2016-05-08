@@ -78,9 +78,9 @@ a.nostyle:visited {
 }
 
 .restricted-content{
-	top: 200px;
+	/*top: 200px;*/
 	margin: 1% 4%;
-	position: fixed;
+	/*position: fixed;*/
 	font-size: large;
 }
 
