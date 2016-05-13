@@ -128,8 +128,8 @@
 				$filter = $filter." AND ";
 			}
 			$filter = $filter.$reading;
-		}
-		if ($shipping != "") {
+		
+}		if ($shipping != "") {
 			if ($filter != "WHERE ") {
 				$filter = $filter." AND ";
 			}
@@ -1873,6 +1873,33 @@
 			while ($row = $result->fetch_array(MYSQLI_NUM)) {
 				fputcsv($fp, array_values($row));
 			}
+		}
+	}
+	function makeBookList() {
+		$list = '<table>';
+		$bookIds = getBookIds(true);
+		foreach ($bookIds as $id) {
+			$list = $list . makeListEntry($id);
+		}
+		return $list.'</table>';
+	}
+	function makeListEntry($id='') {
+		if ($id=='') {
+			return '';
+		} else {
+			$book = getBook($id);
+			$retval = '<form action="editor.php" method="post" id="list-'.$id.'">';
+			$retval = $retval . makeInputFields();
+			$retval = $retval . '<input type="hidden" name="bookid" value="'.$id.'" />';
+			$retval = $retval . '<tr class="list-row" onclick="openEditor(\'list-'.$id.'\')">';
+			$retval = $retval . 	'<td class="book-image">';
+			$retval = $retval . 		'<img src="'.($book['ImageURL']==''?'':$book['ImageURL']).'" alt="'.$book['Title'].'"></img>';
+			$retval = $retval .		'</td> ';
+			$retval = $retval .		'<td class="book-title">'.$book['Title'].'</td>';
+			$retval = $retval .		'<td class="book-subtitle">'.$book['Subtitle'].'</td>';
+			$retval = $retval . '</tr>';
+			$retval = $retval . '</form>';
+			return $retval;
 		}
 	}
 ?>
