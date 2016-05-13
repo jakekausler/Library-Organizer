@@ -212,3 +212,39 @@
 	position: absolute;
 	background-color: black;
 }
+
+.popup {
+	position: fixed;
+	z-index: 1000000;
+	width: 70%;
+	margin-top: 25%;
+	margin-left: 15%;
+	margin-right: 15%;
+	background: #718EA4;
+	box-shadow: inset 4px -6px 6px rgba(0,0,0,0.5), /*bottom internal shadow*/
+	inset 4px 6px 6px rgba(255,255,255,0.5); /*top internal highlight*/
+	padding: 0px 1% 20px 1%;
+	text-align: center;
+	font-size: large;
+}
+.popup h2 {
+	font-size: x-large;
+}
+#progress {
+	position: relative;
+	width: 100%;
+	height: 30px;
+	background-color: #294F6D;
+	margin-top: 10px;
+	color: #DDD;
+}
+#progressBar {
+	position: absolute;
+	width: 0%;
+	height: 100%;
+	background-color: #042037;
+}
+#progressLabel {
+	text-align: center;
+	line-height: 30px;
+}

@@ -45,6 +45,8 @@
 				<input type="hidden" name="reference" value="both" />
 				<input type="hidden" name="owned" value="yes" />
 				<input type="hidden" name="loaned" value="both" />
+				<input type="hidden" name="shipping" value="both" />
+				<input type="hidden" name="reading" value="both" />
 				<input type="hidden" name="page" value="1" />
 				<input type="hidden" name="view" value="list" />
 				<input type="hidden" name="fromdewey" value="000" />
@@ -62,6 +64,8 @@
 				<input type="hidden" name="reference" value="both" />
 				<input type="hidden" name="owned" value="yes" />
 				<input type="hidden" name="loaned" value="no" />
+				<input type="hidden" name="shipping" value="no" />
+				<input type="hidden" name="reading" value="no" />
 				<input type="hidden" name="page" value="1" />
 				<input type="hidden" name="view" value="list" />
 				<input type="hidden" name="fromdewey" value="000" />
@@ -79,6 +83,8 @@
 				<input type="hidden" name="reference" value="both" />
 				<input type="hidden" name="owned" value="yes" />
 				<input type="hidden" name="loaned" value="yes" />
+				<input type="hidden" name="shipping" value="yes" />
+				<input type="hidden" name="reading" value="yes" />
 				<input type="hidden" name="page" value="1" />
 				<input type="hidden" name="view" value="list" />
 				<input type="hidden" name="fromdewey" value="000" />
@@ -96,6 +102,8 @@
 				<input type="hidden" name="reference" value="both" />
 				<input type="hidden" name="owned" value="yes" />
 				<input type="hidden" name="loaned" value="both" />
+				<input type="hidden" name="shipping" value="both" />
+				<input type="hidden" name="reading" value="both" />
 				<input type="hidden" name="page" value="1" />
 				<input type="hidden" name="view" value="list" />
 				<input type="hidden" name="fromdewey" value="000" />
@@ -113,6 +121,8 @@
 				<input type="hidden" name="reference" value="no" />
 				<input type="hidden" name="owned" value="yes" />
 				<input type="hidden" name="loaned" value="both" />
+				<input type="hidden" name="shipping" value="both" />
+				<input type="hidden" name="reading" value="both" />
 				<input type="hidden" name="page" value="1" />
 				<input type="hidden" name="view" value="list" />
 				<input type="hidden" name="fromdewey" value="000" />
@@ -130,6 +140,8 @@
 				<input type="hidden" name="reference" value="yes" />
 				<input type="hidden" name="owned" value="yes" />
 				<input type="hidden" name="loaned" value="both" />
+				<input type="hidden" name="shipping" value="both" />
+				<input type="hidden" name="reading" value="both" />
 				<input type="hidden" name="page" value="1" />
 				<input type="hidden" name="view" value="list" />
 				<input type="hidden" name="fromdewey" value="000" />
@@ -187,6 +199,15 @@
 		<input type="hidden" name="previouspage" value="bookshelf.php" />
 		<?php echo makeInputFields(); ?>
 	</form>
+	<div class="popup" id="progressPopup" style="visibility: hidden;">
+		<h2>Remaking Shelves</h2>
+		<div id="progressAction"></div>
+		<div id="progress">
+			<div id="progressBar">
+				<div id="progressLabel"></div>
+			</div>
+		</div>
+	</div>
 	<script>
 		/* Modernizr 2.5.3 (Custom Build) | MIT & BSD
 		 * Build: http://www.modernizr.com/download/#-csstransforms3d-shiv-cssclasses-teststyles-testprop-testallprops-prefixes-domprefixes-load
