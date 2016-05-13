@@ -15,9 +15,8 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="css/searchstyles.css">
-	<link rel="stylesheet" type="text/css" href="css/gridstyles.css">
 	<link rel="stylesheet" type="text/css" href="css/commonstyles.css">
-	<link rel="stylesheet" type="text/css" href="css/gridviewstyles.css">
+	<link rel="stylesheet" type="text/css" href="css/liststyles.css">
 	<link rel="stylesheet" type="text/css" href="css/bookshelfstyles.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
@@ -34,7 +33,7 @@
 		</div>
 		<div id="grid-control-buttons">
 			<form action="editor.php" method="post">
-				<input type="hidden" name="action" value="index.php" />
+				<input type="hidden" name="action" value="booklist.php" />
 				<?php echo makeInputFields(); ?>
 				<button id="grid-add-button" class="grid-control-button">
 					Add Book
@@ -59,7 +58,7 @@
 				</button>
 			</form>
 		</div>
-		<form id="sort-and-filter-form" action="index.php" method="post">
+		<form id="sort-and-filter-form" action="booklist.php" method="post">
 			<div id="sort-and-filter">
 				<div id="sort">
 					<label id="sort-label">
@@ -172,17 +171,6 @@
 				</div>
 			</div>
 		</form>
-		<div id="view-change">
-			<button onclick="viewList()">
-				List
-			</button
-			><button <disabled onclick="viewGrid()">
-				Grid
-			</button
-			><button onclick="viewShelf()">
-				Shelf
-			</button>
-		</div>
 		<div id="page-navigation">
 			<button <?php echo intval($_POST['page'])==1?'disabled':''; ?> onclick=<?php echo "previousPage(".intval($_POST['page']).")";?>>
 				Previous Page
@@ -192,22 +180,11 @@
 			</button>
 		</div>
 	</div>
-	<div id="grid" style="-webkit-overflow-scrolling: touch; visibility: hidden; display: none;">
-	<?php
-		echo makeBookGrid();
-	?>
+	<div id="list" style="-webkit-overflow-scrolling: touch;">
+		<?php
+			echo makeBookList();
+		?>
 	</div>
-	<div id="grid-view" style="-webkit-overflow-scrolling: touch; visibility: hidden; display: none;">
-	<?php
-		echo makeBookGridView();
-	?>
-	</div>
-	<form id='bookshelf-form' action='bookshelf.php' method='POST'>
-		<?php echo makeInputFields(); ?>
-	</form>
-	<?php
-		echo makeEditorForm();
-	?>
 	<div id="page-navigation">
 		<button <?php echo intval($_POST['page'])==1?'disabled':''; ?> onclick=<?php echo "previousPage(".intval($_POST['page']).")";?>>
 			Previous Page
@@ -227,26 +204,8 @@
 </html>
 
 <script>
-	window.onload = function() {
-		<?php
-		if ($_POST['view']=='list') {
-			echo 'viewList();';
-		} elseif ($_POST['view']=='grid') {
-			echo 'viewGrid();';
-		} elseif ($_POST['view']=='shelf') {
-			echo 'viewShelf();';
-		}
-		if (isset($GLOBALS['alert-message'])) {
-			echo "alert('".$GLOBALS['alert-message']."');";
-		}
-		?>
-		if ($('#grid-view-'+<?php echo $_POST['currentid']; ?>).length) {
-			$('#grid').scrollTop($('#grid-view-'+<?php echo $_POST['currentid']; ?>).offset().top);
-			$('#grid').scrollTop($('#grid-'+<?php echo $_POST['currentid']; ?>).offset().top);
-		}
-	}
 	function openEditor (id) {
-		$input = $('<input type="hidden" name="previouspage" value="index.php" />');
+		$input = $('<input type="hidden" name="previouspage" value="booklist.php" />');
 		$(id).append($input);
 		document.getElementById(id).submit();
 	}
@@ -257,28 +216,5 @@
 	function previousPage(current) {
 		document.getElementById("page").value=current-1;
 		document.getElementById("sort-and-filter-form").submit();
-	}
-	function viewList() {
-		hideall();
-		$('#viewInput').attr('value', 'list');
-		$('#grid').css('visibility', 'visible');
-		$('#grid').css('display', 'block');
-	}
-	function viewGrid() {
-		hideall();
-		$('#viewInput').attr('value', 'grid');
-		$('#grid-view').css('visibility', 'visible');
-		$('#grid-view').css('display', 'block');
-	}
-	function viewShelf() {
-		hideall();
-		$('#viewInput').attr('value', 'shelf');
-		document.getElementById('bookshelf-form').submit();
-	}
-	function hideall() {
-		$('#grid').css('visibility', 'hidden');
-		$('#grid').css('display', 'none');
-		$('#grid-view').css('visibility', 'hidden');
-		$('#grid-view').css('display', 'none');
 	}
 </script>
