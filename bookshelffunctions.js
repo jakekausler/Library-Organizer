@@ -8,17 +8,38 @@ var margin = 6;
 var textMargin = 8;
 var zoom = 1;
 
+var MAKE_SHELF_START_PROGRESS=0.0;
+var MAKE_SHELF_END_PROGRESS=3.0;
+var COLOR_BOOK_START_PROGRESS=MAKE_SHELF_END_PROGRESS;
+var COLOR_BOOK_END_PROGRESS=99.0;
+var SAVE_SHELF_PROGRESS=COLOR_BOOK_END_PROGRESS;
+
+
 // selectedBooks only contain ids
 // allBooks contain all fields
 // allBooks and Shelves will only be given in update is true
 function loadPage(selectedBooks, update, allBooks, shelves) {
 	if (update) {
+		showProgressBar();
+		setProgressAction("Making shelves");
 		makePage(allBooks, shelves);
 		$(window).on('load', function() {
+			setProgressAction("Coloring Books");
 			updateColors(allBooks);
-			saveShelves();
+			setTimeout(function(){
+				setProgressAction("Saving Shelf Layout");
+				moveProgressBar(SAVE_SHELF_PROGRESS);
+				saveShelves();
+			}, 0);
+			setTimeout(function(){
+				setProgressAction("Finishing");
+				moveProgressBar(100);
+			}, 0);
+			setTimeout(function(){
+				hideProgressBar();
+			}, 0);
 		});
-	} else {
+	} else { 
 		loadShelves();
 	}
 }
@@ -26,17 +47,20 @@ function loadPage(selectedBooks, update, allBooks, shelves) {
 function updateColors(allBooks) {
 	var colorThief = new ColorThief();
 	$.each(allBooks, function(index, book) {
-		var t = document.getElementById('tooltip-image-'+book.id);
-		var color = randomColor('#FFFFFF');
-		try {
-			color = colorThief.getColor(t);
-			color = toHex(color[0], color[1], color[2]);
-		} catch(err) {
-			console.log('Failed on book with id: ' + book.id + ' and title: ' + book.text + ' ---\n' + err);
-		}
-		var iColor = inverseColor(color);
-		$('#book-'+book.id).css('color', iColor);
-		$('#book-'+book.id).css('background-color', color);
+		setTimeout(function() {
+			moveProgressBar((((COLOR_BOOK_END_PROGRESS-COLOR_BOOK_START_PROGRESS)*(index))/(allBooks.length)+COLOR_BOOK_START_PROGRESS).toFixed(1));
+			var t = document.getElementById('tooltip-image-'+book.id);
+			var color = randomColor('#FFFFFF');
+			try {
+				color = colorThief.getColor(t);
+				color = toHex(color[0], color[1], color[2]);
+			} catch(err) {
+				console.log('Failed on book with id: ' + book.id + ' and title: ' + book.text + ' ---\n' + err);
+			}
+			var iColor = inverseColor(color);
+			$('#book-'+book.id).css('color', iColor);
+			$('#book-'+book.id).css('background-color', color);
+		}, 0);
 	});
 }
 
@@ -52,7 +76,10 @@ function inBooks(books, id) {
 function makePage(books, shelves) {
 	var i=0;
 	$.each(shelves, function(index, bookcase) {
-		i = makeShelf(books, bookcase, i);
+		setTimeout(function() {
+			moveProgressBar((((MAKE_SHELF_END_PROGRESS-MAKE_SHELF_START_PROGRESS)*(i))/(books.length)+MAKE_SHELF_START_PROGRESS).toFixed(1));
+			i = makeShelf(books, bookcase, i);
+		}, 0);
 	});
 }
 
@@ -300,4 +327,18 @@ function saveShelves() {
 		},
 		dataType: 'text'
 	});
+}
+
+function showProgressBar() {
+	$('#progressPopup').css('visibility', 'visible');
+}
+function moveProgressBar(percent) {
+	$('#progressBar').css('width', percent+"%");
+	$('#progressLabel').html(percent+"%");
+}
+function setProgressAction(action) {
+	$('#progressAction').html(action);
+}
+function hideProgressBar() {
+	$('#progressPopup').css('visibility', 'hidden');
 }
