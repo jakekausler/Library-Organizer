@@ -203,8 +203,8 @@
 		<h2>Remaking Shelves</h2>
 		<div id="progressAction"></div>
 		<div id="progress">
+			<div id="progressLabel"></div>
 			<div id="progressBar">
-				<div id="progressLabel"></div>
 			</div>
 		</div>
 	</div>
