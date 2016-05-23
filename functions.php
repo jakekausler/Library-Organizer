@@ -1703,6 +1703,7 @@
 				$book = getBook($id);
 				$retval = $retval . 	'{';
 				$retval = $retval . 		'text: "'.str_replace('"', ",", $book['Title']).'",';
+				$retval = $retval . 		'subtitle: "'.str_replace('"', ",", $book['Subtitle']).'",';
 				$retval = $retval . 		'width: '.(intval($book['Width'])<=0?'25':$book['Width']).',';
 				$retval = $retval . 		'height: '.(intval($book['Height'])<=0?'200':$book['Height']).',';
 				$retval = $retval . 		'image: "'.str_replace('"', ",", $book['ImageURL']).'",';
