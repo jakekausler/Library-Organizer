@@ -14,6 +14,7 @@ var COLOR_BOOK_START_PROGRESS=MAKE_SHELF_END_PROGRESS;
 var COLOR_BOOK_END_PROGRESS=99.0;
 var SAVE_SHELF_PROGRESS=COLOR_BOOK_END_PROGRESS;
 
+var bookshelfdict = [];
 
 // selectedBooks only contain ids
 // allBooks contain all fields
@@ -78,7 +79,7 @@ function makePage(books, shelves) {
 	$.each(shelves, function(index, bookcase) {
 		setTimeout(function() {
 			moveProgressBar((((MAKE_SHELF_END_PROGRESS-MAKE_SHELF_START_PROGRESS)*(i))/(books.length)+MAKE_SHELF_START_PROGRESS).toFixed(1));
-			i = makeShelf(books, bookcase, i);
+			i = makeShelf(books, bookcase, i, index);
 		}, 0);
 	});
 }
@@ -148,7 +149,7 @@ function componentToHex(c) {
 	return hex.length==1?"0"+hex:hex;
 }
 
-function makeShelf(books, caseStruct, offset) {
+function makeShelf(books, caseStruct, offset, caseNum) {
 	caseStruct.width *= zoom;
 	caseStruct.shelfHeight *= zoom;
 	caseStruct.spacerHeight *= zoom;
@@ -165,6 +166,7 @@ function makeShelf(books, caseStruct, offset) {
 	var curr_shelf = 0;
 	while (curr_shelf < caseStruct.numShelves) {
 		var curr_width = 0;
+		var curr_book = 0;
 		while (books[i] && books[i].width*zoom+curr_width <= caseStruct.width-caseStruct.paddingRight) {
 			books[i].width *= zoom;
 			books[i].height *= zoom;
@@ -178,7 +180,15 @@ function makeShelf(books, caseStruct, offset) {
 			$bc.append($b);
 			$bcase.append($bc);
 			curr_width += books[i].width+actualMargin;
+			var bsd = new Object();
+			bsd.title = books[i].text;
+			bsd.subtitle = books[i].subtitle;
+			bsd.booknum = curr_book;
+			bsd.shelfnum = curr_shelf;
+			bsd.casenum = caseNum;
+			bookshelfdict.push(bsd);
 			i++;
+			curr_book++;
 		}
 		curr_shelf++;
 		if (curr_shelf < caseStruct.numShelves) {
@@ -324,6 +334,19 @@ function saveShelves() {
 					$(book).removeClass('not-selected');
 				}
 			});
+		},
+		dataType: 'text'
+	});
+	data = JSON.stringify(bookshelfdict);
+	$.ajax({
+		type: 'POST',
+		url: 'ajaxrequests.php',
+		data: {
+			contents: data,
+			action: 'saveShelfDict'
+		},
+		success: function(d) {
+			console.log('Saved Shelf Dictionary');
 		},
 		dataType: 'text'
 	});

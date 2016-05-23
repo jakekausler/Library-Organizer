@@ -8,6 +8,9 @@ if (isset($_POST['action']) && !empty($_POST['action'])) {
 		case 'readShelves':
 			echo readFromFile('shelves.txt');
 			break;
+		case 'saveShelfDict':
+			writeToFile('shelfdict.json', $_POST['contents']);
+			break;
 		default:
 			break;
 	}
