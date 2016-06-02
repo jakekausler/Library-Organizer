@@ -170,7 +170,7 @@ function makeShelf(books, caseStruct, offset, caseNum) {
 		while (books[i] && books[i].width*zoom+curr_width <= caseStruct.width-caseStruct.paddingRight) {
 			books[i].width *= zoom;
 			books[i].height *= zoom;
-			var actualMargin = Math.min(caseStruct.bookMargin*2, books[i].width-caseStruct.bookMargin*2)
+			var actualMargin = Math.min(caseStruct.bookMargin*2, books[i].width-caseStruct.bookMargin*2);
 			books[i].width -= actualMargin;
 			$b = makeBook(books[i]);
 			$b.css('bottom', 0);
@@ -180,12 +180,13 @@ function makeShelf(books, caseStruct, offset, caseNum) {
 			$bc.append($b);
 			$bcase.append($bc);
 			curr_width += books[i].width+actualMargin;
-			var bsd = new Object();
-			bsd.title = books[i].text;
-			bsd.subtitle = books[i].subtitle;
-			bsd.booknum = curr_book;
-			bsd.shelfnum = curr_shelf;
-			bsd.casenum = caseNum;
+			var bsd = {
+				title: books[i].text,
+				subtitle: books[i].subtitle,
+				booknum: curr_book,
+				shelfnum: curr_shelf,
+				casenum: caseNum
+			};
 			bookshelfdict.push(bsd);
 			i++;
 			curr_book++;
@@ -226,17 +227,15 @@ function makeShelf(books, caseStruct, offset, caseNum) {
 
 function makeBook(options) {
 	if (!options.color) {
-		var color = randomColor('#FFFFFF');
+		optiond.color = randomColor('#FFFFFF');
 	}
 	if (!options.textColor) {
-		var iColor = inverseColor(color);
+		options.textColor = inverseColor(color);
 	}
 	options = $.extend(true,
 	{
 		id: -1,
 		text: makeid(Math.floor(Math.random()*40+5)),
-		color: color,
-		textColor: iColor,
 		height: Math.floor(Math.random()*100+200),
 		width: Math.floor(Math.random()*30+20),
 		image: 'http://i.istockimg.com/file_thumbview_approve/64101897/5/stock-photo-64101897-blank-book-cover-empty-template-single-brochure-textbook.jpg'
@@ -297,7 +296,7 @@ String.prototype.trimToPx = function(length) {
 		}
 	}
 	return trimmed;
-}
+};
 
 function loadShelves() {
 	$.ajax({
