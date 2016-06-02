@@ -27,8 +27,8 @@
 	}
 
 	function searchMatches($title, $subtitle, $material, $distance, $percent) {
-		$titlearray = split(" ", strtolower(str_replace("  ", " ", str_replace("  ", " ", str_replace(".", " ", str_replace("/", " ", str_replace("&", "and", str_replace("-", " ", str_replace(",", " ", str_replace('"', '', str_replace("'", "", $title)))))))))));
-		$subtitlearray = split(" ", strtolower(str_replace("  ", " ", str_replace("  ", " ", str_replace(".", " ", str_replace("/", " ", str_replace("&", "and", str_replace("-", " ", str_replace(",", " ", str_replace('"', '', str_replace("'", "", $subtitle)))))))))));
+		$titlearray = split(" ", strtolower(str_replace("  ", " ", str_replace("  ", " ", str_replace(":", " ", str_replace(".", " ", str_replace("/", " ", str_replace("&", "and", str_replace("-", " ", str_replace(",", " ", str_replace('"', '', str_replace("'", "", $title))))))))))));
+		$subtitlearray = split(" ", strtolower(str_replace("  ", " ", str_replace("  ", " ", str_replace(":", " ", str_replace(".", " ", str_replace("/", " ", str_replace("&", "and", str_replace("-", " ", str_replace(",", " ", str_replace('"', '', str_replace("'", "", $title))))))))))));
 		$found = [];
 		foreach ($material as $key => $term) {
 			array_push($found, false);

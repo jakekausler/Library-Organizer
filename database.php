@@ -1,9 +1,9 @@
 <?php
 class Database {
-	private static $servername = 'localhost';
-	private static $username = 'jakekaus_root';
-	private static $password = 'Jake021f2f1!';
-	private static $dbname = 'jakekaus_library';
+	private static $servername = '';
+	private static $username = '';
+	private static $password = '';
+	private static $dbname = '';
 	private static $db;
 	private $connection;
 	private function __construct() {
