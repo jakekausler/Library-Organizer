@@ -1398,6 +1398,18 @@
 		if ($first=='' && $middle=='' && $last=='') {
 			return 'NULL';
 		} else {
+			$middles = explode(';', $middle);
+			for ($i=1; $i<count($middles); $i++) {
+				if ($middles[$i]=='') {
+					unset($middles[$i]);
+				}
+			}
+			$m = '';
+			foreach ($middles as $key => $value) {
+				$m = $m.$key.'\t'.$value.'\n';
+			}
+			// $GLOBALS['msg'] = $m;
+			$middle = join(';', array_values($middles));
 			$conn = getConnection();
 			if ($conn->connect_errno>0) {
 				echo die("Connection failed: " . $conn->connect_error);

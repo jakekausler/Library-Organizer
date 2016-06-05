@@ -274,6 +274,9 @@
 		if (isset($GLOBALS['alert-message'])) {
 			echo "alert('".$GLOBALS['alert-message']."');";
 		}
+		if (isset($GLOBALS['msg'])) {
+			echo "alert('".$GLOBALS['msg']."');";
+		}
 		?>
 	}
 	function makeAuthorSelect() {
