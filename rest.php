@@ -5,8 +5,8 @@
 
 	$shelfdict = json_decode(file_get_contents('shelfdict.json'), true);
 
-	$searchDistance = 2;
-	$percentToFind = 0.66;
+	$searchDistance = 10;
+	$percentToFind = 0.8;
 	$rep = 20;
 	$ins = 15;
 	$del = 10;
