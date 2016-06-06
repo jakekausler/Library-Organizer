@@ -16,9 +16,6 @@ var SAVE_SHELF_PROGRESS=COLOR_BOOK_END_PROGRESS;
 
 var bookshelfdict = [];
 
-// selectedBooks only contain ids
-// allBooks contain all fields
-// allBooks and Shelves will only be given in update is true
 function loadPage(selectedBooks, update, allBooks, shelves) {
 	if (update) {
 		showProgressBar();
@@ -202,35 +199,14 @@ function makeShelf(books, caseStruct, offset, caseNum) {
 	}
 	$('#bookcase-area').append($bcase);
 	return i;
-	// var bs = $(bookshelf);
-	// $(bs).attr('id', 'bookshelf0');
-	// $('#bookcase').append(bs);
-	// var bswidth = $('#bookshelf0').width()-margin*2;
-	// var bsnumber = 0;
-	// var currWidth = 0;
-	// $.each(books, function(i, book) {
-		// if (book.width+margin+currWidth > bswidth) {
-			// bs = $(bookshelf);
-			// bsnumber++;
-			// $(bs).attr('id', 'bookshelf'+bsnumber);
-			// $('#bookcase').append(bs);
-			// currWidth = 0;
-		// }
-		// $b = makeBook(book);
-		// $('#bookshelf'+bsnumber+' div:eq(0)').append($b);
-		// $bc = $('<div class="book-container" />');
-		// $bc.append($b);
-		// $('#bookcase').append($bc);
-		// currWidth += $b.width()+margin;
-	// });
 }
 
 function makeBook(options) {
 	if (!options.color) {
-		optiond.color = randomColor('#FFFFFF');
+		options.color = randomColor('#FFFFFF');
 	}
 	if (!options.textColor) {
-		options.textColor = inverseColor(color);
+		options.textColor = inverseColor(options.color);
 	}
 	options = $.extend(true,
 	{
@@ -241,7 +217,6 @@ function makeBook(options) {
 		image: 'http://i.istockimg.com/file_thumbview_approve/64101897/5/stock-photo-64101897-blank-book-cover-empty-template-single-brochure-textbook.jpg'
 	}, options);
 	var fontsize = Math.min(1.25, options.width/20.0);
-	// var containerHeight = $('#bookshelf'+bookshelfnumber).height();
 	$('#hidden-ruler').css('font-size', fontsize+'em');
 	var $text = $('<span class="booktext">' + options.text.trimToPx(options.height-textMargin*2) + '</span>');
 	var $book = $('<div class="book not-selected" style="color:'+options.textColor+';" />');
@@ -249,21 +224,10 @@ function makeBook(options) {
 	$book.height(options.height);
 	$book.width(options.width);
 	$book.css('font-size', fontsize+'em');
-	// $book.offset({top: fromTop-shelfThickness+containerHeight*bookshelfnumber+containerHeight-options.height});
-	// var canvas = document.createElement('canvas');
-	// var context = canvas.getContext('2d');
-	// canvas.className = 'canvas-texture';
-	// canvas.width = options.width;
-	// canvas.height = options.height;
-	// context.fillStyle = options.color;
-	// $book.append(canvas);
-	// context.fillRect(0, 0, options.width, options.height);
 	$book.append($text);
 	$book.css('background-color', options.color);
 	var $tooltip = $('<div class="tooltip-container"><div class="tooltip"><img id="tooltip-image-'+options.id+'" style="width: auto; height: '+options.height+'px;" src="'+options.image+'" alt="'+options.text+'"</img></div></div>');
 	$book.append($tooltip);
-	// $book.css('position', 'relative');
-	// $book.css('left', fromLeft+xoffset);
 	$book.attr('onclick', 'clickBook("'+options.id+'")');
 	return $book;
 }

@@ -76,47 +76,6 @@
 			}
 			$filter = $filter.$owned;
 		}
-
-		// $lrs_yes = array();
-		// $lrs_no = array();
-		// if ($loaned != "") {
-		// 	if (strpos($loaned, "0") > -1) {
-		// 		array_push($lrs_no, $loaned);
-		// 	} else {
-		// 		array_push($lrs_yes, $loaned);
-		// 	}
-		// }
-		// if ($reading != "") {
-		// 	if (strpos($reading, "0") > -1) {
-		// 		array_push($lrs_no, $reading);
-		// 	} else {
-		// 		array_push($lrs_yes, $reading);
-		// 	}
-		// }
-		// if ($shipping != "") {
-		// 	if (strpos($shipping, "0") > -1) {
-		// 		array_push($lrs_no, $shipping);
-		// 	} else {
-		// 		array_push($lrs_yes, $shipping);
-		// 	}
-		// }
-		// $lrs = "";
-		// if (count($lrs_yes) > 0) {
-		// 	$lrs = "(".join(" OR ", $lrs_yes).")";
-		// }
-		// if (count($lrs_no) > 0) {
-		// 	if ($lrs != "") {
-		// 		$lrs = $lrs." AND ";
-		// 	}
-		// 	$lrs = $lrs.join(" AND ", $lrs_no);
-		// }
-		// if ($lrs != "") {
-		// 	if ($filter != "WHERE ") {
-		// 		$filter = $filter." AND ";
-		// 	}
-		// 	$filter = $filter.$lrs;
-		// }
-
 		if ($loaned != "") {
 			if ($filter != "WHERE ") {
 				$filter = $filter." AND ";
@@ -159,7 +118,6 @@
 			$filter = "";
 		}
 		$sql = "SELECT books.BookID, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $_POST['number-to-get'] . " OFFSET " . (($_POST['page']-1)*$_POST['number-to-get']):'');
-		// $GLOBALS['msg'] = $sql;
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
@@ -1408,7 +1366,6 @@
 			foreach ($middles as $key => $value) {
 				$m = $m.$key.'\t'.$value.'\n';
 			}
-			// $GLOBALS['msg'] = $m;
 			$middle = join(';', array_values($middles));
 			$conn = getConnection();
 			if ($conn->connect_errno>0) {
