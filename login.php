@@ -1,4 +1,5 @@
 <?php
+require 'functions.php';
 function checkLoginInformation() {
 	session_name('LibraryLogin');
 	session_set_cookie_params(2*7*24*60*60); // Two week cookie
@@ -52,6 +53,7 @@ function makeLoginArea() {
 		$retval = $retval .				'<input name="submit" value="Login" type="hidden" />';
 		$retval = $retval . 			'<button>Login</button>';
 		$retval = $retval . 		'</div>';
+		$retval = $retval . 		makeInputFields();
 		if ($_SESSION['msg']['login-err']) {
 			$retval = $retval . 	'<div class="err">'.$_SESSION['msg']['login-err'].'</div>';
 			unset($_SESSION['msg']['login-err']);
