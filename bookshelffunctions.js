@@ -18,12 +18,12 @@ var bookshelfdict = [];
 
 function loadPage(selectedBooks, update, allBooks, shelves) {
 	if (update) {
-		showProgressBar();
+		// showProgressBar();
 		setProgressAction("Making shelves");
 		makePage(allBooks, shelves);
 		$(window).on('load', function() {
 			setProgressAction("Coloring Books");
-			updateColors(allBooks);
+			//updateColors(allBooks);
 			setTimeout(function(){
 				setProgressAction("Saving Shelf Layout");
 				moveProgressBar(SAVE_SHELF_PROGRESS);
@@ -217,8 +217,9 @@ function makeBook(options) {
 		image: 'http://i.istockimg.com/file_thumbview_approve/64101897/5/stock-photo-64101897-blank-book-cover-empty-template-single-brochure-textbook.jpg'
 	}, options);
 	var fontsize = Math.min(1.25, options.width/20.0);
-	$('#hidden-ruler').css('font-size', fontsize+'em');
-	var $text = $('<span class="booktext">' + options.text.trimToPx(options.height-textMargin*2) + '</span>');
+	//$('#hidden-ruler').css('font-size', fontsize+'em');
+	//var $text = $('<span class="booktext">' + options.text.trimToPx(options.height-textMargin*2) + '</span>');
+	var $text = $('<span class="booktext" style="width:'+(options.height-10)+'px;">' + options.text + '</span>');
 	var $book = $('<div class="book not-selected" style="color:'+options.textColor+';" />');
 	$book.attr('id', 'book-'+options.id);
 	$book.height(options.height);

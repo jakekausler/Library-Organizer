@@ -92,6 +92,7 @@
 	border-radius: 4px;
 	position: absolute;
 	overflow: visible;
+	white-space: nowrap;
 	float: left;
 	box-shadow: 
 	    inset 0px 2px 3px rgba(255,255,255,0.3),
@@ -185,13 +186,15 @@
 
 .book .booktext {
 	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 	font-family: Garamond, Serif;
 	font-weight: 900;
 	text-align: center;
 	text-decoration: none;
 	text-shadow: 1px 1px 1px rgba(255,255,255,0.2), -1px -1px 1px rgba(0,0,0,0.8);
 	display: block;
-	position: relative;
+	position: absolute;
 	left: 50%;
 	transform-origin: 0% 50%;
 	-webkit-transform-origin: 0% 50%;

@@ -1,5 +1,6 @@
 <?php
 	require 'database.php';
+	require('lib/image-color-extract/colors.inc.php');
 	function getConnection()
 	{
 		return Database::getConnection();
@@ -1311,6 +1312,9 @@
 					if (!$byteCount) {
 						return "Error: " . "Unable to get image";
 					}
+					$color = getImageColor($out);
+					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
+					$conn->query($sql);					
 				} else {
 					return "Error: " . "Unable to get image";
 				}
@@ -1625,6 +1629,9 @@
 					if (!$byteCount) {
 						return "Error: " . "Unable to get image";
 					}
+					$color = getImageColor($out);
+					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
+					$conn->query($sql);					
 				} else {
 					return "Error: " . "Unable to get image";
 				}
@@ -1676,6 +1683,7 @@
 				$retval = $retval . 		'width: '.(intval($book['Width'])<=0?'25':$book['Width']).',';
 				$retval = $retval . 		'height: '.(intval($book['Height'])<=0?'200':$book['Height']).',';
 				$retval = $retval . 		'image: "'.str_replace('"', ",", $book['ImageURL']).'",';
+				$retval = $retval . 		'color: "'.str_replace('"', ",", $book['SpineColor']).'",';
 				$retval = $retval .			'id: "'.$id.'"';
 				$retval = $retval . 	'},';
 			}
@@ -1715,6 +1723,26 @@
 			$retval = $retval . 	'loadPage(books, false)';
 			return $retval.'</script>';
 		}
+	}
+	function stringShelves() {
+		$shelves = getShelves();
+		$retval = $retval . 	'var shelves = [';
+		foreach ($shelves as $shelf) {
+			$retval = $retval . 	'{';
+			$retval = $retval . 		'width: '.$shelf['Width'].',';
+			$retval = $retval . 		'shelfHeight: '.$shelf['ShelfHeight'].',';
+			$retval = $retval . 		'numShelves: '.$shelf['NumShelves'].',';
+			$retval = $retval . 		'spacerHeight: '.$shelf['SpacerHeight'].',';
+			$retval = $retval . 		'paddingLeft: '.$shelf['PaddingLeft'].',';
+			$retval = $retval . 		'paddingRight: '.$shelf['PaddingRight'].',';
+			$retval = $retval . 		'bookMargin: '.$shelf['BookMargin'];
+			$retval = $retval . 	'},';
+		}
+		if (strrpos($retval, ',', -strlen($retval)) !== FALSE) {
+			$retval = rtrim($retval);
+		}
+		$retval = $retval . 	'];';
+		return $retval;
 	}
 	function getShelves() {
 		$shelves = array();
@@ -1870,6 +1898,176 @@
 			$retval = $retval . '</tr>';
 			$retval = $retval . '</form>';
 			return $retval;
+		}
+	}
+	// function getImageColor($url) {
+	// 	if (file_exists($url)) {
+	// 		$img = ImageCreateFromJpeg($url);
+	// 		$width = imagesx($img);
+	// 		$height = imagesy($img);
+	// 		$n = $width*$height;
+	// 		$histogram = array();
+	// 		for ($i=0; $i<$width; $i++) {
+	// 			for ($j=0; $j<$height; $j++) {
+	// 				$rgb = ImageColorAt($img, $i, $j);
+	// 				$r = ($rgb>>16)&0xFF;
+	// 				$g = ($rgb>>8)&0xFF;
+	// 				$b = $rgb&0xFF;
+	// 				$hsl = rgbToHsl(array($r, $g, $b));
+	// 				$histogram[$hsl[0]] += $hsl[0]/$n;
+	// 			}
+	// 		}
+	// 		$max = $histogram[0];
+	// 		for ($i=0; $i<count($histogram); $i++) {
+	// 			if ($histogram[$i] > $max) {
+	// 				$max = $histogram[$i];
+	// 			}
+	// 		}
+	// 		return "hsl(".$max.", 100%, 50%)";
+	// 		// $rgb = hslToRgb(array($max, 1, 0.5));
+	// 		// return rgbToHex(mixColor($rgb, array(255, 255, 255)));
+	// 		// return rgbToHex($rgb);
+	// 	} else {
+	// 		return "null";
+	// 	}
+	// }
+	// function rgbToHsl($rgb)
+	// {
+	// 	$r = $rgb[0];
+	// 	$g = $rgb[1];
+	// 	$b = $rgb[2];
+	// 	$r /= 255;
+	// 	$g /= 255;
+	// 	$b /= 255;
+	// 	$max = max( $r, $g, $b );
+	// 	$min = min( $r, $g, $b );
+	// 	$h;
+	// 	$s;
+	// 	$l = ( $max + $min ) / 2;
+	// 	$d = $max - $min;
+	// 	if( $d == 0 ){
+	// 		$h = $s = 0; // achromatic
+	// 	} else {
+	// 		$s = $d / ( 1 - abs( 2 * $l - 1 ) );
+	// 		switch( $max ){
+	// 		case $r:
+	// 			$h = 60 * fmod( ( ( $g - $b ) / $d ), 6 ); 
+	// 				if ($b > $g) {
+	// 				$h += 360;
+	// 			}
+	// 			break;
+	// 		case $g: 
+	// 			$h = 60 * ( ( $b - $r ) / $d + 2 ); 
+	// 			break;
+	// 		case $b: 
+	// 			$h = 60 * ( ( $r - $g ) / $d + 4 ); 
+	// 			break;
+	// 		}								
+	// 	}
+	// 	return array( round( $h, 2 ), round( $s, 2 ), round( $l, 2 ) );
+	// }
+	// function hslToRgb($hsl)
+	// {
+	// 	$h = $hsl[0];
+	// 	$s = $hsl[1];
+	// 	$l = $hsl[2];
+	// 	$r; 
+	// 	$g; 
+	// 	$b;
+	// 	$c = ( 1 - abs( 2 * $l - 1 ) ) * $s;
+	// 	$x = $c * ( 1 - abs( fmod( ( $h / 60 ), 2 ) - 1 ) );
+	// 	$m = $l - ( $c / 2 );
+	// 	if ( $h < 60 ) {
+	// 		$r = $c;
+	// 		$g = $x;
+	// 		$b = 0;
+	// 	} else if ( $h < 120 ) {
+	// 		$r = $x;
+	// 		$g = $c;
+	// 		$b = 0;			
+	// 	} else if ( $h < 180 ) {
+	// 		$r = 0;
+	// 		$g = $c;
+	// 		$b = $x;					
+	// 	} else if ( $h < 240 ) {
+	// 		$r = 0;
+	// 		$g = $x;
+	// 		$b = $c;
+	// 	} else if ( $h < 300 ) {
+	// 		$r = $x;
+	// 		$g = 0;
+	// 		$b = $c;
+	// 	} else {
+	// 		$r = $c;
+	// 		$g = 0;
+	// 		$b = $x;
+	// 	}
+	// 	$r = ( $r + $m ) * 255;
+	// 	$g = ( $g + $m ) * 255;
+	// 	$b = ( $b + $m  ) * 255;
+	// 	return array( floor( $r ), floor( $g ), floor( $b ) );
+	// }
+	// function mixColor($rgb1, $rgb2) {
+	// 	return array(($rgb1[0]+$rgb2[0])/2, ($rgb1[1]+$rgb2[1])/2, ($rgb1[2]+$rgb2[2])/2);
+	// }
+	// function rgbToHex($rgb)
+	// {
+	// 	return '#' . sprintf('%02x', $rgb[0]) . sprintf('%02x', $rgb[1]) . sprintf('%02x', $rgb[2]);
+	// }
+	// function setAllImageColors() {
+	// 	$conn = getConnection();
+	// 	if ($conn->connect_errno>0) {
+	// 		die("Connection failed: " . $conn->connect_error);
+	// 	}
+	// 	$sql = "SELECT BookID, ImageURL from books";
+	// 	$result = $conn->query($sql);
+	// 	if (!$result) {
+	// 		die("Query failed: " . $conn->error);
+	// 	}
+	// 	while ($row = $result->fetch_assoc()) {
+	// 		$id = $row['BookID'];
+	// 		$url = $row['ImageURL'];
+	// 		$color = getImageColor($url);
+	// 		// echo "<img src='".$url."' width='50' alt='".$row['Title']."' /><div style='display:block; width:50; height:100; background-color=".$color." /></br>";
+	// 		echo "<div style='margin: 25px; outline: 1px solid black; background-color: ".$color.";'><img width=50 src='".$url."' alt='".$row['Title']."' /></div></br>";
+	// 		$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
+	// 		$conn->query($sql);
+	// 	}
+	// }
+	function getImageColor($url) {
+		if (file_exists($url)) {
+			$delta = 24;
+			$reduce_brightness = true;
+			$reduce_gradients = true;
+			$num_results = 1;
+			$ex=new GetMostCommonColors();
+			$colors=$ex->Get_Color($url, $num_results, $reduce_brightness, $reduce_gradients, $delta);
+			foreach ($colors as $hex => $index) {
+				return "#".$hex;
+			}
+		} else {
+			return "null";
+		}
+	}
+	function setAllImageColors() {
+		$conn = getConnection();
+		if ($conn->connect_errno>0) {
+			die("Connection failed: " . $conn->connect_error);
+		}
+		$sql = "SELECT BookID, ImageURL from books";
+		$result = $conn->query($sql);
+		if (!$result) {
+			die("Query failed: " . $conn->error);
+		}
+		while ($row = $result->fetch_assoc()) {
+			set_time_limit(10);
+			$id = $row['BookID'];
+			$url = $row['ImageURL'];
+			$color = getImageColor($url);
+			// echo "<img src='".$url."' width='50' alt='".$row['Title']."' /><div style='display:block; width:50; height:100; background-color=".$color." /></br>";
+			echo $color."<div style='margin: 25px; outline: 1px solid black; background-color: ".$color.";'><img width=50 src='".$url."' alt='".$row['Title']."' /></div></br>";
+			$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
+			$conn->query($sql);
 		}
 	}
 ?>

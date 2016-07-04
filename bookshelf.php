@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="css/bookshelfstyles.css">
 	<link rel="stylesheet" type="text/css" href="css/commonstyles.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="lib/color-thief.js"></script>
+	<script src="lib/color-thief/color-thief.js"></script>
 	<script src="bookshelffunctions.js"></script>
 </head>
 <?php
@@ -33,6 +33,13 @@
 				<input type='hidden' name='reloadShelf' value='true' />
 				<button id="bookshelf-return-button" class="bookshelf-control-button">
 					Remake Shelf
+				</button>
+			</form>
+			<form action="shelfeditor.php" method="post">
+				<?php echo makeInputFields(); ?>
+				<input type='hidden' name='reloadShelf' value='true' />
+				<button id="bookshelf-return-button" class="bookshelf-control-button" disabled>
+					Edit Shelves
 				</button>
 			</form>
 		</div>
