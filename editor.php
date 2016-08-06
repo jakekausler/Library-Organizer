@@ -174,7 +174,7 @@
 						<div class="entry">
 							<div class="combo-select">
 								<label>Primary Language:</label>
-								<input onkeydown="trackChanges('primary-language')" oninput="trackChanges('primary-language')" onpaste="trackChanges('primary-language')" name="primary-language" id="primary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['PrimaryLanguage']).'"'?> />
+								<input onkeydown="trackChanges('primary-language')" oninput="trackChanges('primary-language')" onpaste="trackChanges('primary-language')" name="primary-language" id="primary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['PrimaryLanguage']).'"'?> />
 								<div class="select"><select id="primary-language-select" onchange="chooseOption('primary-language')"><?php echo stringSelection(getLanguages()); ?></select></div>
 							</div>
 						</div>
@@ -192,7 +192,7 @@
 						<div class="entry">
 							<div class="combo-select">
 								<label>Original Language:</label>
-								<input onkeydown="trackChanges('original-language')" oninput="trackChanges('original-language')" onpaste="trackChanges('original-language')" name="original-language" id="original-language-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['OriginalLanguage']).'"'?> />
+								<input onkeydown="trackChanges('original-language')" oninput="trackChanges('original-language')" onpaste="trackChanges('original-language')" name="original-language" id="original-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['OriginalLanguage']).'"'?> />
 								<div class="select"><select id="original-language-select" onchange="chooseOption('original-language')"><?php echo stringSelection(getLanguages()); ?></select></div>
 							</div>
 						</div>
@@ -264,9 +264,7 @@
 </body>
 <script>
 	window.onload = function() {
-		if (<?php echo ($book==NULL?'false':'true'); ?>) {
-			selectCorrect();
-		}
+		selectCorrect();
 		if (<?php echo ($book==NULL?'false':'true'); ?>) {
 			makeAuthorSelect();
 		}
@@ -291,71 +289,81 @@
 	}
 	function selectCorrect() {
 		var seriesSelect = document.getElementById("series-select");
+		var seriesInput = document.getElementById("series-entry");
 		for (var i=0; i<seriesSelect.options.length; i++) {
-			if (seriesSelect.options[i].text==<?php echo '"'.$book['Series'].'"'; ?>) {
+			if (seriesSelect.options[i].text==seriesInput.value) {
 				seriesSelect.value = seriesSelect.options[i].text;
 				break;
 			}
 		}
 		var formatSelect = document.getElementById("format-select");
+		var formatInput = document.getElementById("format-entry");
 		for (var i=0; i<formatSelect.options.length; i++) {
-			if (formatSelect.options[i].text==<?php echo '"'.$book['Format'].'"'; ?>) {
+			if (formatSelect.options[i].text==formatInput.value) {
 				formatSelect.value = formatSelect.options[i].text;
 				break;
 			}
 		}
 		var publisherSelect = document.getElementById("publisher-select");
+		var publisherInput = document.getElementById("publisher-entry");
 		for (var i=0; i<publisherSelect.options.length; i++) {
-			if (publisherSelect.options[i].text==<?php echo '"'.getPublisher($book['PublisherID']).'"'; ?>) {
+			if (publisherSelect.options[i].text==publisherInput.value) {
 				publisherSelect.value = publisherSelect.options[i].text;
 				break;
 			}
 		}
 		var citySelect = document.getElementById("city-select");
+		var cityInput = document.getElementById("city-entry");
 		for (var i=0; i<citySelect.options.length; i++) {
-			if (citySelect.options[i].text==<?php echo '"'.getCity($book['PublisherID']).'"'; ?>) {
+			if (citySelect.options[i].text==cityInput.value) {
 				citySelect.value = citySelect.options[i].text;
 				break;
 			}
 		}
 		var stateSelect = document.getElementById("state-select");
+		var stateInput = document.getElementById("state-entry");
 		for (var i=0; i<stateSelect.options.length; i++) {
-			if (stateSelect.options[i].text==<?php echo '"'.getState($book['PublisherID']).'"'; ?>) {
+			if (stateSelect.options[i].text==stateInput.value) {
 				stateSelect.value = stateSelect.options[i].text;
 				break;
 			}
 		}
 		var countrySelect = document.getElementById("country-select");
+		var countryInput = document.getElementById("country-entry");
 		for (var i=0; i<countrySelect.options.length; i++) {
-			if (countrySelect.options[i].text==<?php echo '"'.getCountry($book['PublisherID']).'"'; ?>) {
+			if (countrySelect.options[i].text==countryInput.value) {
 				countrySelect.value = countrySelect.options[i].text;
 				break;
 			}
 		}
 		var primaryLanguageSelect = document.getElementById("primary-language-select");
+		var primaryLanguageInput = document.getElementById("primary-language-entry");
 		for (var i=0; i<primaryLanguageSelect.options.length; i++) {
-			if (primaryLanguageSelect.options[i].text==<?php echo '"'.$book['PrimaryLanguage'].'"'; ?>) {
+			if (primaryLanguageSelect.options[i].text==primaryLanguageInput.value) {
 				primaryLanguageSelect.value = primaryLanguageSelect.options[i].text;
 				break;
 			}
 		}
 		var secondaryLanguageSelect = document.getElementById("secondary-language-select");
+		var secondaryLanguageInput = document.getElementById("secondary-language-entry");
 		for (var i=0; i<secondaryLanguageSelect.options.length; i++) {
-			if (secondaryLanguageSelect.options[i].text==<?php echo '"'.$book['SecondaryLanguage'].'"'; ?>) {
+			if (secondaryLanguageSelect.options[i].text==secondaryLanguageInput.value) {
 				secondaryLanguageSelect.value = secondaryLanguageSelect.options[i].text;
 				break;
 			}
 		}
 		var originalLanguageSelect = document.getElementById("original-language-select");
+		var originalLanguageInput = document.getElementById("original-language-entry");
 		for (var i=0; i<originalLanguageSelect.options.length; i++) {
-			if (originalLanguageSelect.options[i].text==<?php echo '"'.$book['OriginalLanguage'].'"'; ?>) {
+			if (originalLanguageSelect.options[i].text==originalLanguageInput.value) {
 				originalLanguageSelect.value = originalLanguageSelect.options[i].text;
 				break;
 			}
 		}
 		var deweySelect = document.getElementById("dewey-select");
+		var deweyInput = document.getElementById("dewey-entry");
 		for (var i=0; i<deweySelect.options.length; i++) {
-			if (deweySelect.options[i].text==<?php echo '"'.$book['Dewey'].'"'; ?>) {
+			if (deweySelect.options[i].text==deweyInput.value) {
 				deweySelect.value = deweySelect.options[i].text;
 				break;
 			}
