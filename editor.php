@@ -13,7 +13,9 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="css/editorstyles.css">
 	<link rel="stylesheet" type="text/css" href="css/commonstyles.css">
+	<link rel="stylesheet" type="text/css" href="lib/awesomplete/awesomplete.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="lib/awesomplete/awesomplete.js"></script>
 </head>
 <?php
 	setDefaultValues();
@@ -77,11 +79,9 @@
 						</div>
 						<div id="editor-series">
 							<div class="entry">
-								<div class="combo-select">
 									<label>Series:</label>
-									<input onkeydown="trackChanges('series')" oninput="trackChanges('series')" onpaste="trackChanges('series')" name="series" id="series-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Series']).'"'?> />
-									<div class="select"><select id="series-select" onchange="chooseOption('series')"><?php echo stringSelection(getSeries()); ?></select></div>
-								</div>
+									<input class="awesomplete" list="series-select" name="series" id="series-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Series']).'"'?> />
+									<datalist id="series-select"><?php echo stringSelection(getSeries()); ?></datalist>
 							</div>
 						</div>
 						<div id="editor-volume">
@@ -121,47 +121,37 @@
 					</div>
 					<div id="editor-format">
 						<div class="entry">
-							<div class="combo-select">
 								<label>Format:</label>
-								<input onkeydown="trackChanges('format')" oninput="trackChanges('format')" onpaste="trackChanges('format')" name="format" id="format-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Format']).'"'?> />
-								<div class="select"><select id="format-select" onchange="chooseOption('format')"><?php echo stringSelection(getFormats()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="format-select" name="format" id="format-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Format']).'"'?> />
+								<datalist id="format-select"><?php echo stringSelection(getFormats()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-publisher">
 						<div class="entry">
-							<div class="combo-select">
 								<label>Publisher:</label>
-								<input onkeydown="trackChanges('publisher')" oninput="trackChanges('publisher')" onpaste="trackChanges('publisher')" name="publisher" id="publisher-entry" type="text" value=<?php echo '"'.($book==NULL?'':getPublisher($book['PublisherID'])).'"'?> />
-								<div class="select"><select id="publisher-select" onchange="chooseOption('publisher')"><?php echo stringSelection(getPublishers()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="publisher-select" name="publisher" id="publisher-entry" type="text" value=<?php echo '"'.($book==NULL?'':getPublisher($book['PublisherID'])).'"'?> />
+								<datalist id="publisher-select"><?php echo stringSelection(getPublishers()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-city">
 						<div class="entry">
-							<div class="combo-select">
 								<label>City:</label>
-								<input onkeydown="trackChanges('city')" oninput="trackChanges('city')" onpaste="trackChanges('city')" name="city" id="city-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCity($book['PublisherID'])).'"'?> />
-								<div class="select"><select id="city-select" onchange="chooseOption('city')"><?php echo stringSelection(getCities()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="city-select" name="city" id="city-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCity($book['PublisherID'])).'"'?> />
+								<datalist id="city-select"><?php echo stringSelection(getCities()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-state">
 						<div class="entry">
-							<div class="combo-select">
 								<label>State:</label>
-								<input onkeydown="trackChanges('state')" oninput="trackChanges('state')" onpaste="trackChanges('state')" name="state" id="state-entry" type="text" value=<?php echo '"'.($book==NULL?'':getState($book['PublisherID'])).'"'?> />
-								<div class="select"><select id="state-select" onchange="chooseOption('state')"><?php echo stringSelection(getStates()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="state-select" id="state-entry" type="text" value=<?php echo '"'.($book==NULL?'':getState($book['PublisherID'])).'"'?> />
+								<datalist id="state-select"><?php echo stringSelection(getStates()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-country">
 						<div class="entry">
-							<div class="combo-select">
 								<label>Country:</label>
-								<input onkeydown="trackChanges('country')" oninput="trackChanges('country')" onpaste="trackChanges('country')" name="country" id="country-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCountry($book['PublisherID'])).'"'?> />
-								<div class="select"><select id="country-select" onchange="chooseOption('country')"><?php echo stringSelection(getCountries()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="country-select" name="country" id="country-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCountry($book['PublisherID'])).'"'?> />
+								<datalist id="country-select"><?php echo stringSelection(getCountries()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-edition">
@@ -174,27 +164,23 @@
 						<div class="entry">
 							<div class="combo-select">
 								<label>Primary Language:</label>
-								<input onkeydown="trackChanges('primary-language')" oninput="trackChanges('primary-language')" onpaste="trackChanges('primary-language')" name="primary-language" id="primary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['PrimaryLanguage']).'"'?> />
-								<div class="select"><select id="primary-language-select" onchange="chooseOption('primary-language')"><?php echo stringSelection(getLanguages()); ?></select></div>
+								<input class="awesomplete" list="primary-language-select" name="primary-language" id="primary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['PrimaryLanguage']).'"'?> />
+								<datalist id="primary-language-select"><?php echo stringSelection(getLanguages()); ?></datalist>
 							</div>
 						</div>
 					</div>
 					<div id="editor-secondary-language">
 						<div class="entry">
-							<div class="combo-select">
 								<label>Secondary Language:</label>
-								<input onkeydown="trackChanges('secondary-language')" oninput="trackChanges('secondary-language')" onpaste="trackChanges('secondary-language')" name="secondary-language" id="secondary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['SecondaryLanguage']).'"'?> />
-								<div class="select"><select id="secondary-language-select" onchange="chooseOption('secondary-language')"><?php echo stringSelection(getLanguages()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="secondary-language-select" name="secondary-language" id="secondary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['SecondaryLanguage']).'"'?> />
+								<datalist id="secondary-language-select"><?php echo stringSelection(getLanguages()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-original-language">
 						<div class="entry">
-							<div class="combo-select">
 								<label>Original Language:</label>
-								<input onkeydown="trackChanges('original-language')" oninput="trackChanges('original-language')" onpaste="trackChanges('original-language')" name="original-language" id="original-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['OriginalLanguage']).'"'?> />
-								<div class="select"><select id="original-language-select" onchange="chooseOption('original-language')"><?php echo stringSelection(getLanguages()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="original-language-select" name="original-language" id="original-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['OriginalLanguage']).'"'?> />
+								<datalist id="original-language-select"><?php echo stringSelection(getLanguages()); ?></datalist>
 						</div>
 					</div>
 				</div>
@@ -220,11 +206,9 @@
 					<div class="editor-header">Misc Information</div>
 					<div id="editor-dewey">
 						<div class="entry">
-							<div class="combo-select">
 								<label>Dewey:</label>
-								<input onkeydown="trackChanges('dewey')" oninput="trackChanges('dewey')" onpaste="trackChanges('dewey')" name="dewey" id="dewey-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Dewey']).'"'?> />
-								<div class="select"><select id="dewey-select" onchange="chooseOption('dewey')"><?php echo stringSelection(getDeweys()); ?></select></div>
-							</div>
+								<input class="awesomplete" list="dewey-select" name="dewey" id="dewey-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Dewey']).'"'?> />
+								<datalist id="dewey-select"><?php echo stringSelection(getDeweys()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-isbn">
@@ -455,7 +439,7 @@
 		var text = document.getElementById(fieldName+'-entry').value;
 		select = document.getElementById(fieldName+'-select');
 		for (var i=0; i<select.options.length; i++) {
-			if (select.options[i].text==text) {
+			if (select.options[i].text.startsWith(text)) {
 				select.value = select.options[i].text;
 				return true;
 			}
