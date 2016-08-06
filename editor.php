@@ -72,26 +72,26 @@
 					<div class="editor-header">Book Information</div>
 					<div id="editor-book-info">
 						<div id="editor-title">
-							<div class="entry"><label>Title:</label><input name="title" id="title-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Title']).'"'?> /></div>
+							<div class="entry"><label>Title:</label><input autocomplete="off" name="title" id="title-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Title']).'"'?> /></div>
 						</div>
 						<div id="editor-subtitle">
-							<div class="entry"><label>Subtitle:</label><input name="subtitle" id="subtitle-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Subtitle']).'"'?> /></div>
+							<div class="entry"><label>Subtitle:</label><input autocomplete="off" name="subtitle" id="subtitle-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Subtitle']).'"'?> /></div>
 						</div>
 						<div id="editor-series">
 							<div class="entry">
 									<label>Series:</label>
-									<input class="awesomplete" list="series-select" name="series" id="series-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Series']).'"'?> />
+									<input autocomplete="off" class="awesomplete" list="series-select" name="series" id="series-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Series']).'"'?> />
 									<datalist id="series-select"><?php echo stringSelection(getSeries()); ?></datalist>
 							</div>
 						</div>
 						<div id="editor-volume">
-							<div class="entry"><label>Volume:</label><input name="volume" id="volume-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Volume']).'"'?> /></div>
+							<div class="entry"><label>Volume:</label><input autocomplete="off" name="volume" id="volume-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Volume']).'"'?> /></div>
 						</div>
 					</div>
 					<div id="editor-image-info">
 						<div id="editor-image>">
 							<img id="editor-image-actual" src=<?php echo '"'.($book==NULL?'':($book['ImageURL']==''?'':$book['ImageURL'])).'"'?> alt=<?php echo '"'.($book==NULL?'':$book['Title']).'"'?>>
-							<input name="imageurl" id="image-entry" type="hidden" value="" />
+							<input autocomplete="off" name="imageurl" id="image-entry" type="hidden" value="" />
 						</div>
 						<div id="editor-image-buttons">
 							<button type="button" onclick="changeImage()">
@@ -117,45 +117,45 @@
 				<div id="editor-edition-info" class="editor-area">
 					<div class="editor-header">Edition Information</div>
 					<div id="editor-copyright">
-						<div class="entry"><label>Copyright:</label><input name="copyright" id="copyright-entry" type="text" value=<?php echo '"'.($book==NULL?'':stringDate($book['Copyright'])).'"'?> /></div>
+						<div class="entry"><label>Copyright:</label><input autocomplete="off" name="copyright" id="copyright-entry" type="text" value=<?php echo '"'.($book==NULL?'':stringDate($book['Copyright'])).'"'?> /></div>
 					</div>
 					<div id="editor-format">
 						<div class="entry">
 								<label>Format:</label>
-								<input class="awesomplete" list="format-select" name="format" id="format-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Format']).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="format-select" name="format" id="format-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Format']).'"'?> />
 								<datalist id="format-select"><?php echo stringSelection(getFormats()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-publisher">
 						<div class="entry">
 								<label>Publisher:</label>
-								<input class="awesomplete" list="publisher-select" name="publisher" id="publisher-entry" type="text" value=<?php echo '"'.($book==NULL?'':getPublisher($book['PublisherID'])).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="publisher-select" name="publisher" id="publisher-entry" type="text" value=<?php echo '"'.($book==NULL?'':getPublisher($book['PublisherID'])).'"'?> />
 								<datalist id="publisher-select"><?php echo stringSelection(getPublishers()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-city">
 						<div class="entry">
 								<label>City:</label>
-								<input class="awesomplete" list="city-select" name="city" id="city-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCity($book['PublisherID'])).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="city-select" name="city" id="city-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCity($book['PublisherID'])).'"'?> />
 								<datalist id="city-select"><?php echo stringSelection(getCities()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-state">
 						<div class="entry">
 								<label>State:</label>
-								<input class="awesomplete" list="state-select" id="state-entry" type="text" value=<?php echo '"'.($book==NULL?'':getState($book['PublisherID'])).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="state-select" id="state-entry" type="text" value=<?php echo '"'.($book==NULL?'':getState($book['PublisherID'])).'"'?> />
 								<datalist id="state-select"><?php echo stringSelection(getStates()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-country">
 						<div class="entry">
 								<label>Country:</label>
-								<input class="awesomplete" list="country-select" name="country" id="country-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCountry($book['PublisherID'])).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="country-select" name="country" id="country-entry" type="text" value=<?php echo '"'.($book==NULL?'':getCountry($book['PublisherID'])).'"'?> />
 								<datalist id="country-select"><?php echo stringSelection(getCountries()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-edition">
-						<div class="entry"><label>Edition:</label><input name="edition" id="edition-entry" type="text" value=<?php echo '"'.($book==NULL?'1':$book['Edition']).'"'?> /></div>
+						<div class="entry"><label>Edition:</label><input autocomplete="off" name="edition" id="edition-entry" type="text" value=<?php echo '"'.($book==NULL?'1':$book['Edition']).'"'?> /></div>
 					</div>
 				</div>
 				<div id="editor-language-info" class="editor-area">
@@ -164,7 +164,7 @@
 						<div class="entry">
 							<div class="combo-select">
 								<label>Primary Language:</label>
-								<input class="awesomplete" list="primary-language-select" name="primary-language" id="primary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['PrimaryLanguage']).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="primary-language-select" name="primary-language" id="primary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['PrimaryLanguage']).'"'?> />
 								<datalist id="primary-language-select"><?php echo stringSelection(getLanguages()); ?></datalist>
 							</div>
 						</div>
@@ -172,14 +172,14 @@
 					<div id="editor-secondary-language">
 						<div class="entry">
 								<label>Secondary Language:</label>
-								<input class="awesomplete" list="secondary-language-select" name="secondary-language" id="secondary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['SecondaryLanguage']).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="secondary-language-select" name="secondary-language" id="secondary-language-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['SecondaryLanguage']).'"'?> />
 								<datalist id="secondary-language-select"><?php echo stringSelection(getLanguages()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-original-language">
 						<div class="entry">
 								<label>Original Language:</label>
-								<input class="awesomplete" list="original-language-select" name="original-language" id="original-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['OriginalLanguage']).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="original-language-select" name="original-language" id="original-language-entry" type="text" value=<?php echo '"'.($book==NULL?'English':$book['OriginalLanguage']).'"'?> />
 								<datalist id="original-language-select"><?php echo stringSelection(getLanguages()); ?></datalist>
 						</div>
 					</div>
@@ -187,19 +187,19 @@
 				<div id="editor-dimension-info" class="editor-area">
 					<div class="editor-header">Dimension Information</div>
 					<div id="editor-pages">
-						<div class="entry"><label>Pages:</label><input name="pages" id="pages-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Pages']).'"'?> /></div>
+						<div class="entry"><label>Pages:</label><input autocomplete="off" name="pages" id="pages-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Pages']).'"'?> /></div>
 					</div>
 					<div id="editor-width">
-						<div class="entry"><label>Width:</label><input name="width" id="width-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Width']).'"'?> /></div>
+						<div class="entry"><label>Width:</label><input autocomplete="off" name="width" id="width-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Width']).'"'?> /></div>
 					</div>
 					<div id="editor-height">
-						<div class="entry"><label>Height:</label><input name="height" id="height-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Height']).'"'?> /></div>
+						<div class="entry"><label>Height:</label><input autocomplete="off" name="height" id="height-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Height']).'"'?> /></div>
 					</div>
 					<div id="editor-depth">
-						<div class="entry"><label>Depth:</label><input name="depth" id="depth-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Depth']).'"'?> /></div>
+						<div class="entry"><label>Depth:</label><input autocomplete="off" name="depth" id="depth-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Depth']).'"'?> /></div>
 					</div>
 					<div id="editor-weight">
-						<div class="entry"><label>Weight:</label><input name="weight" id="weight-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Weight']).'"'?> /></div>
+						<div class="entry"><label>Weight:</label><input autocomplete="off" name="weight" id="weight-entry" type="text" value=<?php echo '"'.($book==NULL?'0':$book['Weight']).'"'?> /></div>
 					</div>
 				</div>
 				<div id="editor-misc-info" class="editor-area">
@@ -207,34 +207,34 @@
 					<div id="editor-dewey">
 						<div class="entry">
 								<label>Dewey:</label>
-								<input class="awesomplete" list="dewey-select" name="dewey" id="dewey-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Dewey']).'"'?> />
+								<input autocomplete="off" class="awesomplete" list="dewey-select" name="dewey" id="dewey-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Dewey']).'"'?> />
 								<datalist id="dewey-select"><?php echo stringSelection(getDeweys()); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-isbn">
-						<div class="entry"><label>ISBN:</label><input name="isbn" id="isbn-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['ISBN']).'"'?> /></div>
+						<div class="entry"><label>ISBN:</label><input autocomplete="off" name="isbn" id="isbn-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['ISBN']).'"'?> /></div>
 					</div>
 					<div id="editor-loanee">
 						<div class="entry">
-							<div><label>Loanee First:</label><input name="loaneefirst" id="loanee-first-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['LoaneeFirst']).'"'?> /></div>
-							<div><label>Loanee Last:</label><input name="loaneelast" id="loanee-last-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['LoaneeLast']).'"'?> /></div>
+							<div><label>Loanee First:</label><input autocomplete="off" name="loaneefirst" id="loanee-first-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['LoaneeFirst']).'"'?> /></div>
+							<div><label>Loanee Last:</label><input autocomplete="off" name="loaneelast" id="loanee-last-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['LoaneeLast']).'"'?> /></div>
 						</div>
 					</div>
 					<div id="editor-checkboxes">
 						<div id="editor-read">
-							<div class="checkbox"><input name="isread" id="read-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsRead']==0?'':'checked'))?> />Read</div>
+							<div class="checkbox"><input autocomplete="off" name="isread" id="read-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsRead']==0?'':'checked'))?> />Read</div>
 						</div>
 						<div id="editor-reference">
-							<div class="checkbox"><input name="isreference" id="reference-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsReference']==0?'':'checked'))?> />Reference</div>
+							<div class="checkbox"><input autocomplete="off" name="isreference" id="reference-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsReference']==0?'':'checked'))?> />Reference</div>
 						</div>
 						<div id="editor-owned">
-							<div class="checkbox"><input name="isowned" id="owned-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsOwned']==0?'':'checked'))?> />Owned</div>
+							<div class="checkbox"><input autocomplete="off" name="isowned" id="owned-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsOwned']==0?'':'checked'))?> />Owned</div>
 						</div>
 						<div id="editor-reading">
-							<div class="checkbox"><input name="isreading" id="reading-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsReading']==0?'':'checked'))?> />Reading</div>
+							<div class="checkbox"><input autocomplete="off" name="isreading" id="reading-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsReading']==0?'':'checked'))?> />Reading</div>
 						</div>
 						<div id="editor-shipping">
-							<div class="checkbox"><input name="isshipping" id="shipping-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsShipping']==0?'':'checked'))?> />Shipping</div>
+							<div class="checkbox"><input autocomplete="off" name="isshipping" id="shipping-check" type="checkbox" value="1" <?php echo ($book==NULL?'':($book['IsShipping']==0?'':'checked'))?> />Shipping</div>
 						</div>
 					</div>
 				</div>
