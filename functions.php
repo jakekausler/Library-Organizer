@@ -1300,12 +1300,12 @@
 				}
 			}
 			$_POST['bookid']=$bookId;
-			$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookid.".jpg' WHERE BookID=".$bookid;
+			$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
 			if ($conn->query($sql) !== TRUE) {
 				return "Error: " . $sql . "<br>" . $conn->error;
 			}
 			if ($_POST['imageurl'] != '') {
-				$out = 'res/bookimages/'.$bookid.'.jpg';
+				$out = 'res/bookimages/'.$bookId.'.jpg';
 				$contents = file_get_contents($_POST['imageurl']);
 				if ($contents) {
 					$byteCount = file_put_contents($out, $contents);
@@ -1313,7 +1313,7 @@
 						return "Error: " . "Unable to get image";
 					}
 					$color = getImageColor($out);
-					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
+					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$bookId.';';
 					$conn->query($sql);					
 				} else {
 					return "Error: " . "Unable to get image";
@@ -2069,5 +2069,8 @@
 			$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
 			$conn->query($sql);
 		}
+	}
+	function importBooks() {
+		
 	}
 ?>
