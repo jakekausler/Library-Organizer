@@ -34,9 +34,21 @@
 	} else {
 	?>
 		<div id="import">
-			You are a member and can see this!
+			<p>
+			Please choose a file. Remember that columns should be labeld with exact names (as in the MySQL database). If importing authors, ensure that the column is named 'Authors' and that the string format for each author is as follows, with each separated by a semicolon:
+				<blockquote>
+					{LastName}, {FirstName} {MiddleNames}: {Role}
+				</blockquote>
+			</p>
+			<input id="import-upload" type="file" />
 		</div>
 	<?php
 	}
 	?>
 </body>
+
+<script>
+	$("#import-upload").change(function() {
+		
+	});
+</script>
