@@ -1,9 +1,13 @@
 <?php
 	require 'database.php';
 	require('lib/image-color-extract/colors.inc.php');
-	function getConnection()
+	function getBookConnection()
 	{
-		return Database::getConnection();
+		return BookDatabase::getConnection();
+	}
+	function getBinderConnection()
+	{
+		return BinderDatabase::getConnection();
 	}
 	function makeBookGrid()
 	{
@@ -16,7 +20,7 @@
 	}
 	function getShelfSetIds() {
 		$limit = FALSE;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -39,7 +43,7 @@
 	}
 	function getBookIds($limit)
 	{
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -257,7 +261,7 @@
 	}
 	function getBook($id)
 	{
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -313,7 +317,7 @@
 		return $authorBox.'</div>';
 	}
 	function getAuthors($bookId) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -350,7 +354,7 @@
 		}
 	}
 	function getGenre($dewey) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -366,7 +370,7 @@
 		return $genre;
 	}
 	function getPublisher($publisherID) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -382,7 +386,7 @@
 		return $publisher;
 	}
 	function getCity($publisherID) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -398,7 +402,7 @@
 		return $city;
 	}
 	function getState($publisherID) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -414,7 +418,7 @@
 		return $state;
 	}
 	function getCountry($publisherID) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -485,7 +489,7 @@
 		if ($personId=='') {
 			$personId=-1;
 		}
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -518,7 +522,7 @@
 	{
 		$ids = getOwnedIds();
 		$idstring = join(',', $ids);
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -541,7 +545,7 @@
 	}
 	function getOwnedIds() {
 		$ids = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -560,7 +564,7 @@
 		$formats = array();
 		$formatList = getFormats();
 		foreach ($formatList as $format) {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				die("Connection failed: " . $conn->connect_error);
 			}
@@ -580,7 +584,7 @@
 		$roles = array();
 		$roleList = getRoles();
 		foreach ($roleList as $role) {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				die("Connection failed: " . $conn->connect_error);
 			}
@@ -600,7 +604,7 @@
 		$languages = array();
 		$languageList = getLanguages();
 		foreach ($languageList as $language) {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				die("Connection failed: " . $conn->connect_error);
 			}
@@ -634,7 +638,7 @@
 	function countOnLoan($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -650,7 +654,7 @@
 	}
 	function countReading($idstring) {
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -666,7 +670,7 @@
 	}
 	function countShipping($idstring) {
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -683,7 +687,7 @@
 	function countBooks($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -700,7 +704,7 @@
 	function countDeweys($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -717,7 +721,7 @@
 	function countSeries($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -734,7 +738,7 @@
 	function countRead($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -751,7 +755,7 @@
 	function countOwned($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -768,7 +772,7 @@
 	function countReference($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -785,7 +789,7 @@
 	function countPublishers($idstring)
 	{
 		$count = 0;
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -801,7 +805,7 @@
 	}
 	function calculateDimensions($idstring) {
 		$dimensionInfo = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -838,7 +842,7 @@
 	function getRoles()
 	{
 		$roles = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -855,7 +859,7 @@
 	function getLanguages()
 	{
 		$languages = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -872,7 +876,7 @@
 	function getSeries()
 	{
 		$series = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -889,7 +893,7 @@
 	function getFormats()
 	{
 		$formats = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -906,7 +910,7 @@
 	function getPublishers()
 	{
 		$publishers = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -923,7 +927,7 @@
 	function getCities()
 	{
 		$cities = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -940,7 +944,7 @@
 	function getStates()
 	{
 		$states = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -957,7 +961,7 @@
 	function getCountries()
 	{
 		$countries = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -974,23 +978,23 @@
 	function getDeweys()
 	{
 		$deweys = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
-		$sql = "SELECT Number from dewey_numbers";
+		$sql = "SELECT Number, Genre from dewey_numbers";
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
 		}
 		while ($row = $result->fetch_assoc()) {
-			$deweys[] = $row['Number'];
+			$deweys[] = array($row['Number'], $row['Genre']);
 		}
 		return $deweys;
 	}
 	function getPersons() {
 		$persons = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -1163,7 +1167,7 @@
 		}
 	}
 	function getUser($username, $password) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -1186,12 +1190,28 @@
 	function stringSelection($arr)
 	{
 		$retval = '';
-		if (sizeof($arr)>0) {
-			for ($i=0; $i<sizeof($arr); $i++) {
+		if (count($arr)>0) {
+			for ($i=0; $i<count($arr); $i++) {
 				$retval = $retval . '<option>'.$arr[$i].'</option>';
 			}
 		}
 		return $retval;
+	}
+	function stringDeweySelection($arr, $start=0, $end=-1)
+	{
+		$retval = '';
+		if ($end == -1 || $end > count($arr)) {
+			$end = count($arr);
+		}
+		if (count($arr)>0) {
+			for ($i=$start; $i<$end; $i++) {
+				$retval = $retval . '<option>'.$arr[$i][0].': '.$arr[$i][1].'</option>';
+			}
+		}
+		return $retval;
+	}
+	function loadDeweys() {
+		return file_get_contents('deweys.txt');
 	}
 	function parsePerson($p) {
 		$p = str_replace('.', '', $p);
@@ -1249,7 +1269,7 @@
 		return $d==''?'NULL':$d;
 	}
 	function addBook() {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
@@ -1262,7 +1282,7 @@
 		$reference = (isset($_POST['isreference']) && $_POST['isreference']=='1')?'1':'0';
 		$owned = (isset($_POST['isowned']) && $_POST['isowned']=='1')?'1':'0';
 		$reading = (isset($_POST['isreading']) && $_POST['isreading']=='1')?'1':'0';
-		$shipping = (isset($_POST['isshipping']) && $_POST['isshipping']=='1')?'1':'0';
+		$shipping = (isset($_POST['isshipipng']) && $_POST['isshipping']=='1')?'1':'0';
 		$isbn = $_POST['isbn']==''?'NULL':$_POST['isbn'];
 		$loaneefirst = $_POST['loaneefirst']==''?'NULL':str_replace("'", "\'", $_POST['loaneefirst']);
 		$loaneelast = $_POST['loaneelast']==''?'NULL':str_replace("'", "\'", $_POST['loaneelast']);
@@ -1334,7 +1354,7 @@
 		if ($publisher=='' && $city=='' && $state=='' && $country=='') {
 			return 'NULL';
 		} else {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				return die("Connection failed: " . $conn->connect_error);
 			}
@@ -1371,7 +1391,7 @@
 				$m = $m.$key.'\t'.$value.'\n';
 			}
 			$middle = join(';', array_values($middles));
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				echo die("Connection failed: " . $conn->connect_error);
 			}
@@ -1397,7 +1417,7 @@
 		if ($d=='') {
 			return 'NULL';
 		} else {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				die("Connection failed: " . $conn->connect_error);
 			}
@@ -1421,7 +1441,7 @@
 		if ($f=='') {
 			return 'NULL';
 		} else {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				die("Connection failed: " . $conn->connect_error);
 			}
@@ -1445,7 +1465,7 @@
 		if ($l=='') {
 			return 'NULL';
 		} else {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				die("Connection failed: " . $conn->connect_error);
 			}
@@ -1469,7 +1489,7 @@
 		if ($r=='') {
 			return 'NULL';
 		} else {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				return die("Connection failed: " . $conn->connect_error);
 			}
@@ -1493,7 +1513,7 @@
 		if ($s=='') {
 			return 'NULL';
 		} else {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				return die("Connection failed: " . $conn->connect_error);
 			}
@@ -1516,7 +1536,7 @@
 	function addWrittenBy($bookid, $first, $middle, $last, $role) {
 		$pid = addOrGetPerson($first, $middle, $last);
 		addRole($role);
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
@@ -1535,7 +1555,7 @@
 		}
 	}
 	function removeAllWrittenBy($bookid) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
@@ -1543,7 +1563,7 @@
 		$conn->query($sql);
 	}
 	function updateBook($id) {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
@@ -1644,7 +1664,7 @@
 	}
 	function deleteBook() {
 		if ($_POST['bookid']) {
-			$conn = getConnection();
+			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				return die("Connection failed: " . $conn->connect_error);
 			}
@@ -1746,7 +1766,7 @@
 	}
 	function getShelves() {
 		$shelves = array();
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -1820,7 +1840,7 @@
 		return $retval;
 	}
 	function exportBooks() {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -1847,7 +1867,7 @@
 		}
 	}
 	function exportAuthors() {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -2015,7 +2035,7 @@
 	// 	return '#' . sprintf('%02x', $rgb[0]) . sprintf('%02x', $rgb[1]) . sprintf('%02x', $rgb[2]);
 	// }
 	// function setAllImageColors() {
-	// 	$conn = getConnection();
+	// 	$conn = getBookConnection();
 	// 	if ($conn->connect_errno>0) {
 	// 		die("Connection failed: " . $conn->connect_error);
 	// 	}
@@ -2050,7 +2070,7 @@
 		}
 	}
 	function setAllImageColors() {
-		$conn = getConnection();
+		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
@@ -2070,7 +2090,158 @@
 			$conn->query($sql);
 		}
 	}
-	function importBooks() {
-		
+	function importBooks($contents) {
+		$rows = explode("\r\n", $contents);
+		$headers = explode("\t", $rows[0]);
+		$data = array_splice($rows, 1);
+		for ($i=0; $i < count($data); $i++) { 
+			$data[$i] = explode("\t", $data[$i]);
+		}
+		for ($i=0; $i < count($data); $i++) { 
+			for ($j=0; $j < count($headers); $j++) {
+				$value = $data[$i][$j];
+				switch (strtolower($headers[$j])) {
+					case 'title':
+						$_POST['title'] = $value;
+						break;
+						case 'subtitle':
+						$_POST['subtitle'] = $value;
+						break;
+						case 'copyright':
+						$_POST['Copyright'] = $value;
+						break;
+						case 'publisher':
+						$_POST['Publisher'] = $value;
+						break;
+						case 'city':
+						$_POST['City'] = $value;
+						break;
+						case 'state':
+						$_POST['State'] = $value;
+						break;
+						case 'country':
+						$_POST['Country'] = $value;
+						break;
+						case 'isread':
+						$_POST['isread'] = $value;
+						break;
+						case 'isreference':
+						$_POST['isreference'] = $value;
+						break;
+						case 'isowned':
+						$_POST['isowned'] = $value;
+						break;
+						case 'isreading':
+						$_POST['isreading'] = $value;
+						break;
+						case 'isshipping':
+						$_POST['isshipping'] = $value;
+						break;
+						case 'isbn':
+						$_POST['isbn'] = $value;
+						break;
+						case 'loaneefirst':
+						$_POST['loaneefirst'] = $value;
+						break;
+						case 'loaneelast':
+						$_POST['loaneelast'] = $value;
+						break;
+						case 'dewey':
+						$_POST['dewey'] = $value;
+						break;
+						case 'pages':
+						$_POST['pages'] = $value;
+						break;
+						case 'width':
+						$_POST['width'] = $value;
+						break;
+						case 'height':
+						$_POST['height'] = $value;
+						break;
+						case 'depth':
+						$_POST['depth'] = $value;
+						break;
+						case 'weight':
+						$_POST['weight'] = $value;
+						break;
+						case 'primarylanguage':
+						$_POST['primary-language'] = $value;
+						break;
+						case 'secondarylanguage':
+						$_POST['secondarylanguage'] = $value;
+						break;
+						case 'originallanguage':
+						$_POST['original-language'] = $value;
+						break;
+						case 'series':
+						$_POST['series'] = $value;
+						break;
+						case 'volume':
+						$_POST['volume'] = $value;
+						break;
+						case 'format':
+						$_POST['format'] = $value;
+						break;
+						case 'edition':
+						$_POST['edition'] = $value;
+						break;
+						case 'imageurl':
+						$_POST['imageurl'] = $value;
+						break;
+						case 'authors':
+						$_POST['authors'] = array();
+						foreach (explode(';', $value) as $author) {
+							if (strpos($author, ':') !== false) {
+								return 'Ill formated author string on book '.$i.'. Stopping. Finished all books before this.';
+							}
+							$role = substr($author, strpos($author, ':')+1);
+							$name = substr($author, 0, strpos($author, ':'));
+							$fn = '';
+							$mn = '';
+							$ln = '';
+							if (strpos($name, ',')) {
+								$ln = substr($name, 0, strpos($name, ','));
+								$name = explode(' ', substr($name, strpos($name, ',')+1));
+								if ($name[0] == '') {
+									$fn = $name[1];
+									if (count($name) > 2) {
+										$mn = implode(' ', array_splice($name, 2));
+									}
+								} else {
+									$fn = $name[0];
+									if (count($name) > 1) {
+										$mn = implode(' ', array_splice($name, 1));
+									}
+								}
+							} else {
+								$ln = $name;
+							}
+							$a = $arrayName = array('firstname' => $fn, 'middlenames' => $mn, 'lastname' => $ln, 'role' => $role);
+							array_push($_POST['authors'], $a);
+						}
+						break;
+					default:
+					foreach ($rows as $d) {
+			// foreach ($d as $v) {
+			// 	$ds = $ds.$v.'\t';
+			// }
+			$ds = $d.'\n';
+		}
+						return 'Unknown header value '.$headers[$j].'. Stopping before adding book '.$i.$ds;
+						break;
+				}
+			}
+			if ($err = addBook() !== NULL) {
+				return 'Unable to add book '.$i.'. Added all up to this. Error: '.$err;
+			}
+		}
+		$ds = '';
+		foreach ($headers as $d) {
+			// foreach ($d as $v) {
+			// 	$ds = $ds.$v.'\t';
+			// }
+			$ds = $d.'\n';
+		}
+		return "Books Successfully added: ".$ds;
 	}
 ?>
