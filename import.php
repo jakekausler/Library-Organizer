@@ -49,6 +49,24 @@
 
 <script>
 	$("#import-upload").change(function() {
-		
+		var file = this.files[0];
+		var fr = new FileReader();
+		fr.readAsText(file);
+		fr.onload = function() {
+			alert(JSON.stringify(fr.result.replace('\r', '')));
+			$.ajax({
+				type: 'POST',
+				url: 'ajaxrequests.php',
+				data: {
+					contents: fr.result.replace('\r', ''),
+					action: 'importBooks'
+				},
+				success: function(d) {
+					if (d != "") {
+						alert(d);
+					}
+				}
+			});
+		}
 	});
 </script>

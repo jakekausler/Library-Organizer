@@ -12,7 +12,7 @@ if (isset($_POST['action']) && !empty($_POST['action'])) {
 			writeToFile('shelfdict.json', $_POST['contents']);
 			break;
 		case 'importBooks':
-			importbooks($_POST['contents']);
+			echo importbooks($_POST['contents']);
 		default:
 			break;
 	}
