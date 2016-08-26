@@ -1,6 +1,6 @@
 <?php
-	require 'functions.php';
-	require 'login.php';
+	require_once 'functions.php';
+	require_once 'login.php';
 	checkLoginInformation();
 ?>
 <!DOCTYPE HTML>
@@ -20,7 +20,7 @@
 			<?php echo makeLoginArea(); ?>
 		</div>
 		<div id="statistics-control-buttons">
-			<form action="index.php" method="post">
+			<form action="index.php" method="get">
 				<?php echo makeInputFields(); ?>
 				<button id="statistics-return-button" class="statistics-control-button">
 					Return

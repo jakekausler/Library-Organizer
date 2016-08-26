@@ -1,9 +1,9 @@
 <?php
-	require 'functions.php';
-	if (isset($_POST['export-action'])) {
-		if ($_POST['export-action']=='books') {
+	require_once 'functions.php';
+	if (isset($GLOBALS['HoldingVar']['export-action'])) {
+		if ($GLOBALS['HoldingVar']['export-action']=='books') {
 			exportBooks();
-		} else if ($_POST['export-action']=='authors') {
+		} else if ($GLOBALS['HoldingVar']['export-action']=='authors') {
 			exportAuthors();
 		}
 	}

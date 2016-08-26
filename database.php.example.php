@@ -1,4 +1,5 @@
 <?php
+if (!class_exists('Database')) {
 class Database {
 	private static $servername = '';
     private static $username = '';
@@ -18,5 +19,6 @@ class Database {
 		}
 		return self::$db->connection;
 	}
+}
 }
 ?>

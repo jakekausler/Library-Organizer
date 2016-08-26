@@ -1,6 +1,6 @@
 <?php
-	require 'functions.php';
-	require 'login.php';
+	require_once 'functions.php';
+	require_once 'login.php';
 	checkLoginInformation();
 ?>
 <!DOCTYPE HTML>
@@ -22,20 +22,20 @@
 			<?php echo makeLoginArea(); ?>
 		</div>
 		<div id="bookshelf-control-buttons">
-			<form action="index.php" method="post">
+			<form action="index.php" method="get">
 				<?php echo makeInputFields(); ?>
 				<button id="bookshelf-return-button" class="bookshelf-control-button">
 					Return
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<?php echo makeInputFields(); ?>
 				<input type='hidden' name='reloadShelf' value='true' />
 				<button id="bookshelf-return-button" class="bookshelf-control-button">
 					Remake Shelf
 				</button>
 			</form>
-			<form action="shelfeditor.php" method="post">
+			<form action="shelfeditor.php" method="get">
 				<?php echo makeInputFields(); ?>
 				<input type='hidden' name='reloadShelf' value='true' />
 				<button id="bookshelf-return-button" class="bookshelf-control-button" disabled>
@@ -44,7 +44,7 @@
 			</form>
 		</div>
 		<div id="bookshelf-view-buttons">
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -63,7 +63,7 @@
 					All
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -82,7 +82,7 @@
 					Available
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -101,7 +101,7 @@
 					Not Available
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -120,7 +120,7 @@
 					Read
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -139,7 +139,7 @@
 					Not Read
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -158,7 +158,7 @@
 					Reference
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -177,7 +177,7 @@
 					Shipping
 				</button>
 			</form>
-			<form action="bookshelf.php" method="post">
+			<form action="bookshelf.php" method="get">
 				<input type="hidden" name="sort" value="dewey" />
 				<input type="hidden" name="number-to-get" value="5000" />
 				<input type="hidden" name="filter" value="" />
@@ -202,7 +202,7 @@
 	</div>
 	<div id="hidden-container"></div>
 	<span id="hidden-ruler"></span>
-	<form id="editor-form" action="editor.php" method="post" style="visibility: hidden;">
+	<form id="editor-form" action="editor.php" method="get" style="visibility: hidden;">
 		<input type="hidden" name="previouspage" value="bookshelf.php" />
 		<?php echo makeInputFields(); ?>
 	</form>

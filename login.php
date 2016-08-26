@@ -1,5 +1,5 @@
 <?php
-require 'functions.php';
+require_once 'functions.php';
 function checkLoginInformation() {
 	session_name('LibraryLogin');
 	session_set_cookie_params(2*7*24*60*60); // Two week cookie

@@ -1,9 +1,9 @@
 <?php
-	require 'functions.php';
-	require 'login.php';
+	require_once 'functions.php';
+	require_once 'login.php';
 	checkLoginInformation();
-	if (isset($_POST['action'])) {
-		if ($_POST['action']=='save') {
+	if (isset($GLOBALS['HoldingVar']['action'])) {
+		if ($GLOBALS['HoldingVar']['action']=='save') {
 			saveBook();
 		}
 	}
@@ -19,13 +19,13 @@
 </head>
 <?php
 	setDefaultValues();
-	if (!isset($_POST['bookid'])) {
-		$_POST['bookid'] = -1;
+	if (!isset($GLOBALS['HoldingVar']['bookid'])) {
+		$GLOBALS['HoldingVar']['bookid'] = -1;
 	}
-	if (intval($_POST['bookid'])<=0) {
-		$_POST['bookid'] = -1;
+	if (intval($GLOBALS['HoldingVar']['bookid'])<=0) {
+		$GLOBALS['HoldingVar']['bookid'] = -1;
 	}
-	$_POST['currentid']=$_POST['bookid'];
+	$GLOBALS['HoldingVar']['currentid']=$GLOBALS['HoldingVar']['bookid'];
 ?>
 <body>
 	<div id="editor-header">
@@ -34,7 +34,7 @@
 			<?php echo makeLoginArea(); ?>
 		</div>
 		<div id="editor-control-buttons">
-			<form action=<?php echo '"'.$_POST['previouspage'].'"'; ?> method="post">
+			<form action=<?php echo '"'.$GLOBALS['HoldingVar']['previouspage'].'"'; ?> method="get">
 				<?php echo makeInputFields(); ?>
 				<button onclick="cancel()" id="editor-cancel-button" class="editor-control-button">
 					Return
@@ -48,7 +48,7 @@
 			</form
 			><form action="index.php" method="post">
 				<?php echo makeInputFields(); ?>
-				<button type="button" onclick="removeBook()" id="editor-remove-button" class="editor-control-button" <?php echo (!$_SESSION['id'] || $_POST['bookid']==-1)?'disabled':'' ?>>
+				<button type="button" onclick="removeBook()" id="editor-remove-button" class="editor-control-button" <?php echo (!$_SESSION['id'] || $GLOBALS['HoldingVar']['bookid']==-1)?'disabled':'' ?>>
 					Remove
 				</button>
 			</form>
@@ -62,8 +62,8 @@
 		<div id="editor">
 			<form id="editor-form" method="post" action="index.php">
 				<?php
-					if ($_POST['bookid']!=-1) {
-						$book = getBook($_POST['bookid']);
+					if ($GLOBALS['HoldingVar']['bookid']!=-1) {
+						$book = getBook($GLOBALS['HoldingVar']['bookid']);
 					} else {
 						$book = NULL;
 					}
@@ -103,7 +103,7 @@
 				<div id="editor-author-info" class="editor-area">
 					<div class="editor-header">Author Information</div>
 					<?php
-						echo makeAuthorBox($_POST['bookid']);
+						echo makeAuthorBox($GLOBALS['HoldingVar']['bookid']);
 					?>
 					<div id="editor-author-buttons">
 						<button type="button" onclick="addAuthor()">
@@ -208,7 +208,8 @@
 						<div class="entry">
 								<label>Dewey:</label>
 								<input autocomplete="off" class="awesomplete" list="dewey-select" name="dewey" id="dewey-entry" type="text" value=<?php echo '"'.($book==NULL?'':$book['Dewey']).'"'?> />
-								<datalist id="dewey-select"><?php echo stringSelection(getDeweys()); ?></datalist>
+								<!-- <datalist id="dewey-select"><?php // echo stringDeweySelection(getDeweys()); ?></datalist> -->
+								<datalist id="dewey-select"><?php echo loadDeweys(); ?></datalist>
 						</div>
 					</div>
 					<div id="editor-isbn">
@@ -239,7 +240,7 @@
 					</div>
 				</div>
 				<?php echo makeInputFields(); ?>
-				<input type="hidden" name="bookid" value=<?php echo '"'.$_POST['bookid'].'"'; ?> />
+				<input type="hidden" name="bookid" value=<?php echo '"'.$GLOBALS['HoldingVar']['bookid'].'"'; ?> />
 			</form>
 		</div>
 	<?php
@@ -364,7 +365,7 @@
 			document.getElementById("editor-form").appendChild(input);
 			input = document.createElement("input");
 			input.setAttribute("name", "previouspage");
-			input.setAttribute("value", <?php echo '"'.$_POST['previouspage'].'"';?>);
+			input.setAttribute("value", <?php echo '"'.$GLOBALS['HoldingVar']['previouspage'].'"';?>);
 			document.getElementById("editor-form").appendChild(input);
 			$('.author-box').children().each(function(i, item){
 				input = document.createElement("input");
@@ -384,7 +385,11 @@
 				input.setAttribute('value', $(item).find('.role').text());
 				document.getElementById("editor-form").appendChild(input);
 			});
-			console.log(document.getElementById("editor-form"));
+			var dewey = document.getElementById("dewey-entry").value;
+			if (dewey.includes(':')) {
+				dewey = dewey.substring(0, dewey.indexOf(':'));
+			}
+			document.getElementById("dewey-entry").value = dewey;
 			document.getElementById("editor-form").setAttribute("action", "editor.php");
 			document.getElementById("editor-form").submit();
 		}

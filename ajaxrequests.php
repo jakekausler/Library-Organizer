@@ -1,5 +1,5 @@
 <?php
-require 'functions.php';
+require_once 'functions.php';
 if (isset($_POST['action']) && !empty($_POST['action'])) {
 	switch ($_POST['action']) {
 		case 'saveShelves':

@@ -1,6 +1,6 @@
 <?php
-	require 'functions.php';
-	require 'login.php';
+	require_once 'functions.php';
+	require_once 'login.php';
 	checkLoginInformation();
 ?>
 <!DOCTYPE HTML>

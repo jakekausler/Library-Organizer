@@ -1,14 +1,14 @@
 <?php
-	require 'functions.php';
-	require 'login.php';
+	require_once 'functions.php';
+	require_once 'login.php';
 	checkLoginInformation();
-	if (isset($_POST['action'])) {
-		if ($_POST['action']=='remove') {
+	if (isset($GLOBALS['HoldingVar']['action'])) {
+		if ($GLOBALS['HoldingVar']['action']=='remove') {
 			removeBook();
 		}
 	}
-	if ($_POST['filter'] != "") {
-		$_POST['page']=1;
+	if ($GLOBALS['HoldingVar']['filter'] != "") {
+		$GLOBALS['HoldingVar']['page']=1;
 	}
 ?>
 <!DOCTYPE HTML>
@@ -31,7 +31,7 @@
 			<?php echo makeLoginArea(); ?>
 		</div>
 		<div id="bookshelf-control-buttons">
-			<form action=<?php echo '"'.$_POST['previouspage'].'"'; ?> method="post">
+			<form action=<?php echo '"'.$GLOBALS['HoldingVar']['previouspage'].'"'; ?> method="get">
 				<?php echo makeInputFields(); ?>
 				<button onclick="cancel()" id="editor-cancel-button" class="editor-control-button">
 					Return

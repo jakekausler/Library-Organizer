@@ -1,14 +1,28 @@
 <?php
-	require 'database.php';
-	require('lib/image-color-extract/colors.inc.php');
+	require_once 'database.php';
+	require_once('lib/image-color-extract/colors.inc.php');
+	$GLOBALS['HoldingVar'] = [];
+	switch ($_SERVER['REQUEST_METHOD']) {
+		case 'GET':
+			$GLOBALS['HoldingVar'] = $_GET;
+			break;
+		case 'POST':
+			$GLOBALS['HoldingVar'] = $_POST;
+			break;
+	}
+	if (!function_exists('getBookConnection')) {
 	function getBookConnection()
 	{
 		return BookDatabase::getConnection();
 	}
+	}
+	if (!function_exists('getBinderConnection')) {
 	function getBinderConnection()
 	{
 		return BinderDatabase::getConnection();
 	}
+	}
+	if (!function_exists('makeBookGrid')) {
 	function makeBookGrid()
 	{
 		$grid = '';
@@ -18,6 +32,8 @@
 		}
 		return $grid;
 	}
+	}
+	if (!function_exists('getShelfSetIds')) {
 	function getShelfSetIds() {
 		$limit = FALSE;
 		$conn = getBookConnection();
@@ -30,7 +46,7 @@
 		$authors = "(SELECT  PersonID, AuthorRoles.BookID, LastName, MiddleNames, FirstName FROM persons JOIN (SELECT written_by.BookID, AuthorID FROM written_by WHERE Role='Author') AS AuthorRoles ON AuthorRoles.AuthorID = persons.PersonID ORDER BY LastName , MiddleNames , FirstName ) AS Authors";
 		$owned = "IsOwned="."1";
 		$filter = "WHERE ".$owned;
-		$sql = "SELECT books.BookID, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $_POST['number-to-get'] . " OFFSET " . (($_POST['page']-1)*$_POST['number-to-get']):'');
+		$sql = "SELECT books.BookID, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $GLOBALS['HoldingVar']['number-to-get'] . " OFFSET " . (($GLOBALS['HoldingVar']['page']-1)*$GLOBALS['HoldingVar']['number-to-get']):'');
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
@@ -41,15 +57,17 @@
 		}
 		return $ids;
 	}
+	}
+	if (!function_exists('getBookIds')) {
 	function getBookIds($limit)
 	{
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
-		if ($_POST['sort']=='title') {
+		if ($GLOBALS['HoldingVar']['sort']=='title') {
 			$order = "Title2, LastName, FirstName, MiddleNames";
-		} elseif ($_POST['sort']=='series') {
+		} elseif ($GLOBALS['HoldingVar']['sort']=='series') {
 			$order = "if(Series2='' or Series2 is null,1,0), Series2, Volume, LastName, FirstName, MiddleNames, Title2";
 		} else {
 			$order = "Dewey, LastName, FirstName, MiddleNames, Series2, Volume, Title2";
@@ -57,14 +75,14 @@
 		$titlechange = "CASE WHEN Title LIKE 'The %' THEN TRIM(SUBSTR(Title from 4)) ELSE CASE WHEN Title LIKE 'An %' THEN TRIM(SUBSTR(Title from 3)) ELSE CASE WHEN Title LIKE 'A %' THEN TRIM(SUBSTR(Title from 2)) ELSE Title END END END AS Title2";
 		$serieschange = "CASE WHEN Series LIKE 'The %' THEN TRIM(SUBSTR(Series from 4)) ELSE CASE WHEN Series LIKE 'An %' THEN TRIM(SUBSTR(Series from 3)) ELSE CASE WHEN Series LIKE 'A %' THEN TRIM(SUBSTR(Series from 2)) ELSE Series END END END AS Series2";
 		$authors = "(SELECT  PersonID, AuthorRoles.BookID, LastName, MiddleNames, FirstName FROM persons JOIN (SELECT written_by.BookID, AuthorID FROM written_by WHERE Role='Author') AS AuthorRoles ON AuthorRoles.AuthorID = persons.PersonID ORDER BY LastName , MiddleNames , FirstName ) AS Authors";
-		$read = ($_POST['read']=='both'?"":($_POST['read']=='yes'?"IsRead="."1":"IsRead="."0"));
-		$reference = ($_POST['reference']=='both'?"":($_POST['reference']=='yes'?"IsReference="."1":"IsReference="."0"));
-		$owned = ($_POST['owned']=='both'?"":($_POST['owned']=='yes'?"IsOwned="."1":"IsOwned="."0"));
-		$loaned = ($_POST['loaned']=='both'?"":($_POST['loaned']=='yes'?"LoaneeFirst IS NOT NULL OR LoaneeLast IS NOT NULL":"LoaneeFirst IS NULL AND LoaneeLast IS NULL"));
-		$reading = ($_POST['reading']=='both'?"":($_POST['reading']=='yes'?"IsReading="."1":"IsReading="."0"));
-		$shipping = ($_POST['shipping']=='both'?"":($_POST['shipping']=='yes'?"IsShipping="."1":"IsShipping="."0"));
-		$startDewey = 'Dewey >= "'.formatDewey($_POST['fromdewey']).'"';
-		$endDewey = 'Dewey <= "'.formatDewey($_POST['todewey']).'"';
+		$read = ($GLOBALS['HoldingVar']['read']=='both'?"":($GLOBALS['HoldingVar']['read']=='yes'?"IsRead="."1":"IsRead="."0"));
+		$reference = ($GLOBALS['HoldingVar']['reference']=='both'?"":($GLOBALS['HoldingVar']['reference']=='yes'?"IsReference="."1":"IsReference="."0"));
+		$owned = ($GLOBALS['HoldingVar']['owned']=='both'?"":($GLOBALS['HoldingVar']['owned']=='yes'?"IsOwned="."1":"IsOwned="."0"));
+		$loaned = ($GLOBALS['HoldingVar']['loaned']=='both'?"":($GLOBALS['HoldingVar']['loaned']=='yes'?"LoaneeFirst IS NOT NULL OR LoaneeLast IS NOT NULL":"LoaneeFirst IS NULL AND LoaneeLast IS NULL"));
+		$reading = ($GLOBALS['HoldingVar']['reading']=='both'?"":($GLOBALS['HoldingVar']['reading']=='yes'?"IsReading="."1":"IsReading="."0"));
+		$shipping = ($GLOBALS['HoldingVar']['shipping']=='both'?"":($GLOBALS['HoldingVar']['shipping']=='yes'?"IsShipping="."1":"IsShipping="."0"));
+		$startDewey = 'Dewey >= "'.formatDewey($GLOBALS['HoldingVar']['fromdewey']).'"';
+		$endDewey = 'Dewey <= "'.formatDewey($GLOBALS['HoldingVar']['todewey']).'"';
 		$filter = "WHERE ";
 		if ($read != "") {
 			$filter = $filter.$read;
@@ -122,7 +140,7 @@
 		if ($filter == "WHERE " || $filter == "WHERE") {
 			$filter = "";
 		}
-		$sql = "SELECT books.BookID, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $_POST['number-to-get'] . " OFFSET " . (($_POST['page']-1)*$_POST['number-to-get']):'');
+		$sql = "SELECT books.BookID, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $GLOBALS['HoldingVar']['number-to-get'] . " OFFSET " . (($GLOBALS['HoldingVar']['page']-1)*$GLOBALS['HoldingVar']['number-to-get']):'');
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
@@ -133,6 +151,8 @@
 		}
 		return $ids;
 	}
+	}
+	if (!function_exists('formatDewey')) {
 	function formatDewey($d) {
 		$retval = '';
 		if (!is_numeric($d)) {
@@ -150,9 +170,11 @@
 		}
 		return $retval;
 	}
+	}
+	if (!function_exists('formFilterText')) {
 	function formFilterText() {
 		$s = "";
-		$filters = explode(' ', $_POST['filter']);
+		$filters = explode(' ', $GLOBALS['HoldingVar']['filter']);
 		foreach ($filters as $filter) {
 			if ($filter != "") {
 				$s = $s."(Title LIKE '%{$filter}%' OR Subtitle LIKE '%{$filter}%' OR Series LIKE '%{$filter}%' OR Dewey LIKE '%{$filter}%') AND ";
@@ -163,13 +185,15 @@
 		}
 		return $s;
 	}
+	}
+	if (!function_exists('makeGridEntry')) {
 	function makeGridEntry($id='')
 	{
 		if ($id=='') {
 			return '';
 		} else {
 			$book = getBook($id);
-			$retval = 			'<form action="editor.php" method="post" id="grid-'.$id.'">';
+			$retval = 			'<form action="editor.php" method="get" id="grid-'.$id.'">';
 			$retval = $retval . makeInputFields();
 			$retval = $retval . '<input type="hidden" name="bookid" value="'.$id.'" />';
 			$retval = $retval .	'<div class="grid-book" onclick="openEditor(\'grid-'.$id.'\')">';
@@ -259,6 +283,8 @@
 			return $retval;
 		}
 	}
+	}
+	if (!function_exists('getBook')) {
 	function getBook($id)
 	{
 		$conn = getBookConnection();
@@ -277,6 +303,8 @@
 		}
 		return $book;
 	}
+	}
+	if (!function_exists('ordinalEnding')) {
 	function ordinalEnding($n) {
 		$i = (int)$n;
 		if ($i%10==1) {
@@ -301,6 +329,8 @@
 			return 'th';
 		}
 	}
+	}
+	if (!function_exists('makeAuthorBox')) {
 	function makeAuthorBox($bookId='', $limit=-1) {
 		$authors = getAuthors($bookId);
 		usort($authors, "compareAuthors");
@@ -316,6 +346,8 @@
 		}
 		return $authorBox.'</div>';
 	}
+	}
+	if (!function_exists('getAuthors')) {
 	function getAuthors($bookId) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -332,6 +364,8 @@
 		}
 		return $authors;
 	}
+	}
+	if (!function_exists('compareAuthors')) {
 	function compareAuthors($a, $b) {
 		if ($a['Role']=='Author' && $b['Role']!='Author') {
 			return -1;
@@ -353,6 +387,8 @@
 			}
 		}
 	}
+	}
+	if (!function_exists('getGenre')) {
 	function getGenre($dewey) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -369,6 +405,8 @@
 		}
 		return $genre;
 	}
+	}
+	if (!function_exists('getPublisher')) {
 	function getPublisher($publisherID) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -385,6 +423,8 @@
 		}
 		return $publisher;
 	}
+	}
+	if (!function_exists('getCity')) {
 	function getCity($publisherID) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -401,6 +441,8 @@
 		}
 		return $city;
 	}
+	}
+	if (!function_exists('getState')) {
 	function getState($publisherID) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -417,6 +459,8 @@
 		}
 		return $state;
 	}
+	}
+	if (!function_exists('getCountry')) {
 	function getCountry($publisherID) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -433,6 +477,8 @@
 		}
 		return $country;
 	}
+	}
+	if (!function_exists('stringLocation')) {
 	function stringLocation($city='',$state='',$country='') {
 		if ($city==''&&$state==''&&$country=='') {
 			return '';
@@ -442,9 +488,13 @@
 		$location = $city.$state.$country;
 		return $location;
 	}
+	}
+	if (!function_exists('stringDate')) {
 	function stringDate($date) {
 		return substr($date, 0, strpos($date, '-'));
 	}
+	}
+	if (!function_exists('stringLanguage')) {
 	function stringLanguage($pl,$sl,$ol) {
 		if ($pl==''&&$sl==''&&$ol=='') {
 			return '';
@@ -470,6 +520,8 @@
 		}
 		return $s;
 	}
+	}
+	if (!function_exists('stringDimensions')) {
 	function stringDimensions($pages, $width, $height, $depth, $weight) {
 		$s = '';
 		if ($pages != '0') {
@@ -485,6 +537,8 @@
 		}
 		return $s;
 	}
+	}
+	if (!function_exists('getPerson')) {
 	function getPerson($personId) {
 		if ($personId=='') {
 			$personId=-1;
@@ -504,6 +558,8 @@
 		}
 		return $person;
 	}
+	}
+	if (!function_exists('stringPerson')) {
 	function stringPerson($person)
 	{
 		$retval = '';
@@ -518,6 +574,8 @@
 			return $retval;
 		}
 	}
+	}
+	if (!function_exists('getStatistics')) {
 	function getStatistics()
 	{
 		$ids = getOwnedIds();
@@ -543,6 +601,8 @@
 		$statistics['Dimensions'] = calculateDimensions($idstring);
 		return $statistics;
 	}
+	}
+	if (!function_exists('getOwnedIds')) {
 	function getOwnedIds() {
 		$ids = array();
 		$conn = getBookConnection();
@@ -559,6 +619,8 @@
 		}
 		return $ids;
 	}
+	}
+	if (!function_exists('countFormats')) {
 	function countFormats($idstring)
 	{
 		$formats = array();
@@ -579,6 +641,8 @@
 		}
 		return $formats;
 	}
+	}
+	if (!function_exists('countRoles')) {
 	function countRoles($idstring)
 	{
 		$roles = array();
@@ -599,6 +663,8 @@
 		}
 		return $roles;
 	}
+	}
+	if (!function_exists('countLanguages')) {
 	function countLanguages($idstring)
 	{
 		$languages = array();
@@ -635,6 +701,8 @@
 		}
 		return $languages;
 	}
+	}
+	if (!function_exists('countOnLoan')) {
 	function countOnLoan($idstring)
 	{
 		$count = 0;
@@ -652,6 +720,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countReading')) {
 	function countReading($idstring) {
 		$count = 0;
 		$conn = getBookConnection();
@@ -668,6 +738,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countShipping')) {
 	function countShipping($idstring) {
 		$count = 0;
 		$conn = getBookConnection();
@@ -684,6 +756,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countBooks')) {
 	function countBooks($idstring)
 	{
 		$count = 0;
@@ -701,6 +775,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countDeweys')) {
 	function countDeweys($idstring)
 	{
 		$count = 0;
@@ -718,6 +794,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countSeries')) {
 	function countSeries($idstring)
 	{
 		$count = 0;
@@ -735,6 +813,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countRead')) {
 	function countRead($idstring)
 	{
 		$count = 0;
@@ -752,6 +832,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countOwned')) {
 	function countOwned($idstring)
 	{
 		$count = 0;
@@ -769,6 +851,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countReference')) {
 	function countReference($idstring)
 	{
 		$count = 0;
@@ -786,6 +870,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('countPublishers')) {
 	function countPublishers($idstring)
 	{
 		$count = 0;
@@ -803,6 +889,8 @@
 		}
 		return $count;
 	}
+	}
+	if (!function_exists('calculateDimensions')) {
 	function calculateDimensions($idstring) {
 		$dimensionInfo = array();
 		$conn = getBookConnection();
@@ -839,6 +927,8 @@
 		}
 		return $dimensionInfo;
 	}
+	}
+	if (!function_exists('getRoles')) {
 	function getRoles()
 	{
 		$roles = array();
@@ -856,6 +946,8 @@
 		}
 		return $roles;
 	}
+	}
+	if (!function_exists('getLanguages')) {
 	function getLanguages()
 	{
 		$languages = array();
@@ -873,6 +965,8 @@
 		}
 		return $languages;
 	}
+	}
+	if (!function_exists('getSeries')) {
 	function getSeries()
 	{
 		$series = array();
@@ -890,6 +984,8 @@
 		}
 		return $series;
 	}
+	}
+	if (!function_exists('getFormats')) {
 	function getFormats()
 	{
 		$formats = array();
@@ -907,6 +1003,8 @@
 		}
 		return $formats;
 	}
+	}
+	if (!function_exists('getPublishers')) {
 	function getPublishers()
 	{
 		$publishers = array();
@@ -924,6 +1022,8 @@
 		}
 		return $publishers;
 	}
+	}
+	if (!function_exists('getCities')) {
 	function getCities()
 	{
 		$cities = array();
@@ -941,6 +1041,8 @@
 		}
 		return $cities;
 	}
+	}
+	if (!function_exists('getStates')) {
 	function getStates()
 	{
 		$states = array();
@@ -958,6 +1060,8 @@
 		}
 		return $states;
 	}
+	}
+	if (!function_exists('getCountries')) {
 	function getCountries()
 	{
 		$countries = array();
@@ -975,6 +1079,8 @@
 		}
 		return $countries;
 	}
+	}
+	if (!function_exists('getDeweys')) {
 	function getDeweys()
 	{
 		$deweys = array();
@@ -982,16 +1088,18 @@
 		if ($conn->connect_errno>0) {
 			die("Connection failed: " . $conn->connect_error);
 		}
-		$sql = "SELECT Number, Genre from dewey_numbers";
+		$sql = "SELECT Number from dewey_numbers";
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
 		}
 		while ($row = $result->fetch_assoc()) {
-			$deweys[] = array($row['Number'], $row['Genre']);
+			$deweys[] = $row['Number'];
 		}
 		return $deweys;
 	}
+	}
+	if (!function_exists('getPersons')) {
 	function getPersons() {
 		$persons = array();
 		$conn = getBookConnection();
@@ -1011,6 +1119,8 @@
 		}
 		return $persons;
 	}
+	}
+	if (!function_exists('makeStatisticDiv')) {
 	function makeStatisticDiv()
 	{
 		$stats = getStatistics();
@@ -1104,6 +1214,8 @@
 		$statsDiv = $statsDiv .	'</div>';
 		return $statsDiv;
 	}
+	}
+	if (!function_exists('countPages')) {
 	function countPages($limit)
 	{
 		if ($limit<=0) {
@@ -1113,59 +1225,63 @@
 			return ceil($numBooks/$limit);
 		}
 	}
+	}
+	if (!function_exists('setDefaultValues')) {
 	function setDefaultValues() {
-		if (!isset($_POST['sort'])) {
-			$_POST['sort'] = 'dewey';
+		if (!isset($GLOBALS['HoldingVar']['sort'])) {
+			$GLOBALS['HoldingVar']['sort'] = 'dewey';
 		}
-		if (!isset($_POST['number-to-get'])) {
-			$_POST['number-to-get'] = 50;
+		if (!isset($GLOBALS['HoldingVar']['number-to-get'])) {
+			$GLOBALS['HoldingVar']['number-to-get'] = 50;
 		}
-		if (intval($_POST['number-to-get'])<=0) {
-			$_POST['number-to-get'] = 50;
+		if (intval($GLOBALS['HoldingVar']['number-to-get'])<=0) {
+			$GLOBALS['HoldingVar']['number-to-get'] = 50;
 		}
-		if (!isset($_POST['filter'])) {
-			$_POST['filter'] = '';
+		if (!isset($GLOBALS['HoldingVar']['filter'])) {
+			$GLOBALS['HoldingVar']['filter'] = '';
 		}
-		if (!isset($_POST['read'])) {
-			$_POST['read'] = 'both';
+		if (!isset($GLOBALS['HoldingVar']['read'])) {
+			$GLOBALS['HoldingVar']['read'] = 'both';
 		}
-		if (!isset($_POST['reference'])) {
-			$_POST['reference'] = 'both';
+		if (!isset($GLOBALS['HoldingVar']['reference'])) {
+			$GLOBALS['HoldingVar']['reference'] = 'both';
 		}
-		if (!isset($_POST['owned'])) {
-			$_POST['owned'] = 'yes';
+		if (!isset($GLOBALS['HoldingVar']['owned'])) {
+			$GLOBALS['HoldingVar']['owned'] = 'yes';
 		}
-		if (!isset($_POST['loaned'])) {
-			$_POST['loaned'] = 'no';
+		if (!isset($GLOBALS['HoldingVar']['loaned'])) {
+			$GLOBALS['HoldingVar']['loaned'] = 'no';
 		}
-		if (!isset($_POST['shipping'])) {
-			$_POST['shipping'] = 'no';
+		if (!isset($GLOBALS['HoldingVar']['shipping'])) {
+			$GLOBALS['HoldingVar']['shipping'] = 'no';
 		}
-		if (!isset($_POST['reading'])) {
-			$_POST['reading'] = 'no';
+		if (!isset($GLOBALS['HoldingVar']['reading'])) {
+			$GLOBALS['HoldingVar']['reading'] = 'no';
 		}
-		if (!isset($_POST['page'])) {
-			$_POST['page'] = 1;
+		if (!isset($GLOBALS['HoldingVar']['page'])) {
+			$GLOBALS['HoldingVar']['page'] = 1;
 		}
-		if (intval($_POST['page'])<=0) {
-			$_POST['page'] = 1;
+		if (intval($GLOBALS['HoldingVar']['page'])<=0) {
+			$GLOBALS['HoldingVar']['page'] = 1;
 		}
-		if (!isset($_POST['view'])) {
-			$_POST['view'] = 'list';
+		if (!isset($GLOBALS['HoldingVar']['view'])) {
+			$GLOBALS['HoldingVar']['view'] = 'list';
 		}
-		if (!isset($_POST['fromdewey'])) {
-			$_POST['fromdewey'] = '0';
+		if (!isset($GLOBALS['HoldingVar']['fromdewey'])) {
+			$GLOBALS['HoldingVar']['fromdewey'] = '0';
 		}
-		if (!isset($_POST['todewey'])) {
-			$_POST['todewey'] = 'FIC';
+		if (!isset($GLOBALS['HoldingVar']['todewey'])) {
+			$GLOBALS['HoldingVar']['todewey'] = 'FIC';
 		}
-		if (!isset($_POST['currentid'])) {
-			$_POST['currentid'] = '-1';
+		if (!isset($GLOBALS['HoldingVar']['currentid'])) {
+			$GLOBALS['HoldingVar']['currentid'] = '-1';
 		}
-		if (!isset($_POST['previouspage'])) {
-			$_POST['previouspage'] = 'index.php';
+		if (!isset($GLOBALS['HoldingVar']['previouspage'])) {
+			$GLOBALS['HoldingVar']['previouspage'] = 'index.php';
 		}
 	}
+	}
+	if (!function_exists('getUser')) {
 	function getUser($username, $password) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -1178,6 +1294,8 @@
 		}
 		return $result->fetch_assoc();
 	}
+	}
+	if (!function_exists('makeLogo')) {
 	function makeLogo()
 	{
 		$retval = 			'<a href="index.php" class="nostyle">';
@@ -1187,6 +1305,8 @@
 		$retval = $retval .	'</a>';
 		return $retval;
 	}
+	}
+	if (!function_exists('stringSelection')) {
 	function stringSelection($arr)
 	{
 		$retval = '';
@@ -1197,22 +1317,8 @@
 		}
 		return $retval;
 	}
-	function stringDeweySelection($arr, $start=0, $end=-1)
-	{
-		$retval = '';
-		if ($end == -1 || $end > count($arr)) {
-			$end = count($arr);
-		}
-		if (count($arr)>0) {
-			for ($i=$start; $i<$end; $i++) {
-				$retval = $retval . '<option>'.$arr[$i][0].': '.$arr[$i][1].'</option>';
-			}
-		}
-		return $retval;
 	}
-	function loadDeweys() {
-		return file_get_contents('deweys.txt');
-	}
+	if (!function_exists('parsePerson')) {
 	function parsePerson($p) {
 		$p = str_replace('.', '', $p);
 		$fn = '';
@@ -1247,9 +1353,11 @@
 		array_push($names, $ln);
 		return $names;
 	}
+	}
+	if (!function_exists('saveBook')) {
 	function saveBook() {
-		if ($book = getBook($_POST['bookid'])) {
-			$err = updateBook($_POST['bookid']);
+		if ($book = getBook($GLOBALS['HoldingVar']['bookid'])) {
+			$err = updateBook($GLOBALS['HoldingVar']['bookid']);
 		} else {
 			$err = addBook();
 		}
@@ -1257,6 +1365,8 @@
 			$GLOBALS['alert-message'] = 'Failed to save the book:\n'.str_replace("'", "\'", str_replace("\'", "'", $err));
 		}
 	}
+	}
+	if (!function_exists('removeBook')) {
 	function removeBook() {
 		$err = deleteBook();
 		if (!$err) {
@@ -1265,40 +1375,44 @@
 			$GLOBALS['alert-message'] = 'Failed to remove the book:\n'.str_replace(str_replace("'", "\'", $err));
 		}
 	}
+	}
+	if (!function_exists('formatDate')) {
 	function formatDate($d) {
 		return $d==''?'NULL':$d;
 	}
+	}
+	if (!function_exists('addBook')) {
 	function addBook() {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
 			return die("Connection failed: " . $conn->connect_error);
 		}
 
-		$title = str_replace("'", "\'", $_POST['title']);
-		$subtitle = $_POST['subtitle']==''?'NULL':str_replace("'", "\'", $_POST['subtitle']);
-		$copyright = formatDate($_POST['Copyright']);
-		$pubid = addOrGetPublisher(str_replace("'", "\'", $_POST['Publisher']), str_replace("'", "\'", $_POST['City']), str_replace("'", "\'", $_POST['State']), str_replace("'", "\'", $_POST['Country']));
-		$read = (isset($_POST['isread']) && $_POST['isread']=='1')?'1':'0';
-		$reference = (isset($_POST['isreference']) && $_POST['isreference']=='1')?'1':'0';
-		$owned = (isset($_POST['isowned']) && $_POST['isowned']=='1')?'1':'0';
-		$reading = (isset($_POST['isreading']) && $_POST['isreading']=='1')?'1':'0';
-		$shipping = (isset($_POST['isshipipng']) && $_POST['isshipping']=='1')?'1':'0';
-		$isbn = $_POST['isbn']==''?'NULL':$_POST['isbn'];
-		$loaneefirst = $_POST['loaneefirst']==''?'NULL':str_replace("'", "\'", $_POST['loaneefirst']);
-		$loaneelast = $_POST['loaneelast']==''?'NULL':str_replace("'", "\'", $_POST['loaneelast']);
-		$dewey = $_POST['dewey']==''?'':formatDewey($_POST['dewey']);
-		$pages = $_POST['pages'];
-		$width = $_POST['width'];
-		$height = $_POST['height'];
-		$depth = $_POST['depth'];
-		$weight = $_POST['weight'];
-		$primary = str_replace("'", "\'", $_POST['primary-language']);
-		$secondary = str_replace("'", "\'", $_POST['secondary-language']);
-		$original = str_replace("'", "\'", $_POST['original-language']);
-		$series = str_replace("'", "\'", $_POST['series']);
-		$volume = $_POST['volume'];
-		$format = str_replace("'", "\'", $_POST['format']);
-		$edition = $_POST['edition'];
+		$title = str_replace("'", "\'", $GLOBALS['HoldingVar']['title']);
+		$subtitle = $GLOBALS['HoldingVar']['subtitle']==''?'NULL':str_replace("'", "\'", $GLOBALS['HoldingVar']['subtitle']);
+		$copyright = formatDate($GLOBALS['HoldingVar']['Copyright']);
+		$pubid = addOrGetPublisher(str_replace("'", "\'", $GLOBALS['HoldingVar']['Publisher']), str_replace("'", "\'", $GLOBALS['HoldingVar']['City']), str_replace("'", "\'", $GLOBALS['HoldingVar']['State']), str_replace("'", "\'", $GLOBALS['HoldingVar']['Country']));
+		$read = (isset($GLOBALS['HoldingVar']['isread']) && $GLOBALS['HoldingVar']['isread']=='1')?'1':'0';
+		$reference = (isset($GLOBALS['HoldingVar']['isreference']) && $GLOBALS['HoldingVar']['isreference']=='1')?'1':'0';
+		$owned = (isset($GLOBALS['HoldingVar']['isowned']) && $GLOBALS['HoldingVar']['isowned']=='1')?'1':'0';
+		$reading = (isset($GLOBALS['HoldingVar']['isreading']) && $GLOBALS['HoldingVar']['isreading']=='1')?'1':'0';
+		$shipping = (isset($GLOBALS['HoldingVar']['isshipipng']) && $GLOBALS['HoldingVar']['isshipping']=='1')?'1':'0';
+		$isbn = $GLOBALS['HoldingVar']['isbn']==''?'NULL':$GLOBALS['HoldingVar']['isbn'];
+		$loaneefirst = $GLOBALS['HoldingVar']['loaneefirst']==''?'NULL':str_replace("'", "\'", $GLOBALS['HoldingVar']['loaneefirst']);
+		$loaneelast = $GLOBALS['HoldingVar']['loaneelast']==''?'NULL':str_replace("'", "\'", $GLOBALS['HoldingVar']['loaneelast']);
+		$dewey = $GLOBALS['HoldingVar']['dewey']==''?'':formatDewey($GLOBALS['HoldingVar']['dewey']);
+		$pages = $GLOBALS['HoldingVar']['pages'];
+		$width = $GLOBALS['HoldingVar']['width'];
+		$height = $GLOBALS['HoldingVar']['height'];
+		$depth = $GLOBALS['HoldingVar']['depth'];
+		$weight = $GLOBALS['HoldingVar']['weight'];
+		$primary = str_replace("'", "\'", $GLOBALS['HoldingVar']['primary-language']);
+		$secondary = str_replace("'", "\'", $GLOBALS['HoldingVar']['secondary-language']);
+		$original = str_replace("'", "\'", $GLOBALS['HoldingVar']['original-language']);
+		$series = str_replace("'", "\'", $GLOBALS['HoldingVar']['series']);
+		$volume = $GLOBALS['HoldingVar']['volume'];
+		$format = str_replace("'", "\'", $GLOBALS['HoldingVar']['format']);
+		$edition = $GLOBALS['HoldingVar']['edition'];
 
 		$dewey=str_replace("'", "\'", addDewey($dewey));
 		$series=str_replace("'", "\'", addSeries($series));
@@ -1314,19 +1428,19 @@
 		}
 		if ($conn->query($sql) === TRUE) {
 			$bookId = $conn->insert_id;
-			if (isset($_POST['authors'])) {
-				foreach ($_POST['authors'] as $author) {
+			if (isset($GLOBALS['HoldingVar']['authors'])) {
+				foreach ($GLOBALS['HoldingVar']['authors'] as $author) {
 					addWrittenBy($bookId, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
 				}
 			}
-			$_POST['bookid']=$bookId;
+			$GLOBALS['HoldingVar']['bookid']=$bookId;
 			$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
 			if ($conn->query($sql) !== TRUE) {
 				return "Error: " . $sql . "<br>" . $conn->error;
 			}
-			if ($_POST['imageurl'] != '') {
+			if ($GLOBALS['HoldingVar']['imageurl'] != '') {
 				$out = 'res/bookimages/'.$bookId.'.jpg';
-				$contents = file_get_contents($_POST['imageurl']);
+				$contents = file_get_contents($GLOBALS['HoldingVar']['imageurl']);
 				if ($contents) {
 					$byteCount = file_put_contents($out, $contents);
 					if (!$byteCount) {
@@ -1344,12 +1458,16 @@
 		}
 		return null;
 	}
+	}
+	if (!function_exists('addAuthor')) {
 	function addAuthor($author, $bookid) {
 		$author = explode(' - ', $author);
 		$person = parsePerson($author[0]);
 		$role = $author[1];
 		addWrittenBy($bookid, $person[0], $person[1], $person[2], $role);
 	}
+	}
+	if (!function_exists('addOrGetPublisher')) {
 	function addOrGetPublisher($publisher, $city, $state, $country) {
 		if ($publisher=='' && $city=='' && $state=='' && $country=='') {
 			return 'NULL';
@@ -1376,6 +1494,8 @@
 			return $id;
 		}
 	}
+	}
+	if (!function_exists('addOrGetPerson')) {
 	function addOrGetPerson($first, $middle, $last) {
 		if ($first=='' && $middle=='' && $last=='') {
 			return 'NULL';
@@ -1413,6 +1533,8 @@
 			return $id;
 		}
 	}
+	}
+	if (!function_exists('addDewey')) {
 	function addDewey($d) {
 		if ($d=='') {
 			return 'NULL';
@@ -1437,6 +1559,8 @@
 			return $d;
 		}
 	}
+	}
+	if (!function_exists('addFormat')) {
 	function addFormat($f) {
 		if ($f=='') {
 			return 'NULL';
@@ -1461,6 +1585,8 @@
 			return $f;
 		}
 	}
+	}
+	if (!function_exists('addLanguage')) {
 	function addLanguage($l) {
 		if ($l=='') {
 			return 'NULL';
@@ -1485,6 +1611,8 @@
 			return $l;
 		}
 	}
+	}
+	if (!function_exists('addRole')) {
 	function addRole($r) {
 		if ($r=='') {
 			return 'NULL';
@@ -1509,6 +1637,8 @@
 			return $r;
 		}
 	}
+	}
+	if (!function_exists('addSeries')) {
 	function addSeries($s) {
 		if ($s=='') {
 			return 'NULL';
@@ -1533,6 +1663,8 @@
 			return $s;
 		}
 	}
+	}
+	if (!function_exists('addWrittenBy')) {
 	function addWrittenBy($bookid, $first, $middle, $last, $role) {
 		$pid = addOrGetPerson($first, $middle, $last);
 		addRole($role);
@@ -1554,6 +1686,8 @@
 			$conn->query($sql);
 		}
 	}
+	}
+	if (!function_exists('removeAllWrittenBy')) {
 	function removeAllWrittenBy($bookid) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -1562,6 +1696,8 @@
 		$sql = "DELETE FROM written_by WHERE BookId='".$bookid."'";
 		$conn->query($sql);
 	}
+	}
+	if (!function_exists('updateBook')) {
 	function updateBook($id) {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -1570,37 +1706,37 @@
 
 		removeAllWrittenBy($id);
 
-		if (isset($_POST['authors'])) {
-			foreach ($_POST['authors'] as $author) {
+		if (isset($GLOBALS['HoldingVar']['authors'])) {
+			foreach ($GLOBALS['HoldingVar']['authors'] as $author) {
 				addWrittenBy($id, $author['firstname'], str_replace(' ', ';', $author['middlenames']), $author['lastname'], $author['role']);
 			}
 		}
 
-		$title = str_replace("'", "\'", $_POST['title']);
-		$subtitle = $_POST['subtitle']==''?'NULL':str_replace("'", "\'", $_POST['subtitle']);
-		$copyright = formatDate($_POST['Copyright']);
-		$pubid = addOrGetPublisher(str_replace("'", "\'", $_POST['Publisher']), str_replace("'", "\'", $_POST['City']), str_replace("'", "\'", $_POST['State']), str_replace("'", "\'", $_POST['Country']));
-		$read = (isset($_POST['isread']) && $_POST['isread']=='1')?'1':'0';
-		$reference = (isset($_POST['isreference']) && $_POST['isreference']=='1')?'1':'0';
-		$owned = (isset($_POST['isowned']) && $_POST['isowned']=='1')?'1':'0';
-		$reading = (isset($_POST['isreading']) && $_POST['isreading']=='1')?'1':'0';
-		$shipping = (isset($_POST['isshipping']) && $_POST['isshipping']=='1')?'1':'0';
-		$isbn = $_POST['isbn']==''?'NULL':$_POST['isbn'];
-		$loaneefirst = $_POST['loaneefirst']==''?'NULL':str_replace("'", "\'", $_POST['loaneefirst']);
-		$loaneelast = $_POST['loaneelast']==''?'NULL':str_replace("'", "\'", $_POST['loaneelast']);
-		$dewey = $_POST['dewey']==''?'':formatDewey($_POST['dewey']);
-		$pages = $_POST['pages'];
-		$width = $_POST['width'];
-		$height = $_POST['height'];
-		$depth = $_POST['depth'];
-		$weight = $_POST['weight'];
-		$primary = str_replace("'", "\'", $_POST['primary-language']);
-		$secondary = str_replace("'", "\'", $_POST['secondary-language']);
-		$original = str_replace("'", "\'", $_POST['original-language']);
-		$series = str_replace("'", "\'", $_POST['series']);
-		$volume = $_POST['volume'];
-		$format = str_replace("'", "\'", $_POST['format']);
-		$edition = $_POST['edition'];
+		$title = str_replace("'", "\'", $GLOBALS['HoldingVar']['title']);
+		$subtitle = $GLOBALS['HoldingVar']['subtitle']==''?'NULL':str_replace("'", "\'", $GLOBALS['HoldingVar']['subtitle']);
+		$copyright = formatDate($GLOBALS['HoldingVar']['Copyright']);
+		$pubid = addOrGetPublisher(str_replace("'", "\'", $GLOBALS['HoldingVar']['Publisher']), str_replace("'", "\'", $GLOBALS['HoldingVar']['City']), str_replace("'", "\'", $GLOBALS['HoldingVar']['State']), str_replace("'", "\'", $GLOBALS['HoldingVar']['Country']));
+		$read = (isset($GLOBALS['HoldingVar']['isread']) && $GLOBALS['HoldingVar']['isread']=='1')?'1':'0';
+		$reference = (isset($GLOBALS['HoldingVar']['isreference']) && $GLOBALS['HoldingVar']['isreference']=='1')?'1':'0';
+		$owned = (isset($GLOBALS['HoldingVar']['isowned']) && $GLOBALS['HoldingVar']['isowned']=='1')?'1':'0';
+		$reading = (isset($GLOBALS['HoldingVar']['isreading']) && $GLOBALS['HoldingVar']['isreading']=='1')?'1':'0';
+		$shipping = (isset($GLOBALS['HoldingVar']['isshipping']) && $GLOBALS['HoldingVar']['isshipping']=='1')?'1':'0';
+		$isbn = $GLOBALS['HoldingVar']['isbn']==''?'NULL':$GLOBALS['HoldingVar']['isbn'];
+		$loaneefirst = $GLOBALS['HoldingVar']['loaneefirst']==''?'NULL':str_replace("'", "\'", $GLOBALS['HoldingVar']['loaneefirst']);
+		$loaneelast = $GLOBALS['HoldingVar']['loaneelast']==''?'NULL':str_replace("'", "\'", $GLOBALS['HoldingVar']['loaneelast']);
+		$dewey = $GLOBALS['HoldingVar']['dewey']==''?'':formatDewey($GLOBALS['HoldingVar']['dewey']);
+		$pages = $GLOBALS['HoldingVar']['pages'];
+		$width = $GLOBALS['HoldingVar']['width'];
+		$height = $GLOBALS['HoldingVar']['height'];
+		$depth = $GLOBALS['HoldingVar']['depth'];
+		$weight = $GLOBALS['HoldingVar']['weight'];
+		$primary = str_replace("'", "\'", $GLOBALS['HoldingVar']['primary-language']);
+		$secondary = str_replace("'", "\'", $GLOBALS['HoldingVar']['secondary-language']);
+		$original = str_replace("'", "\'", $GLOBALS['HoldingVar']['original-language']);
+		$series = str_replace("'", "\'", $GLOBALS['HoldingVar']['series']);
+		$volume = $GLOBALS['HoldingVar']['volume'];
+		$format = str_replace("'", "\'", $GLOBALS['HoldingVar']['format']);
+		$edition = $GLOBALS['HoldingVar']['edition'];
 
 		$dewey=str_replace("'", "\'", addDewey($dewey));
 		$series=str_replace("'", "\'", addSeries($series));
@@ -1641,9 +1777,9 @@
 			$sql = str_replace('\\\\', '\\', $sql);
 		}
 		if ($conn->query($sql) === TRUE) {
-			if ($_POST['imageurl'] != '') {
+			if ($GLOBALS['HoldingVar']['imageurl'] != '') {
 				$out = 'res/bookimages/'.$id.'.jpg';
-				$contents = file_get_contents($_POST['imageurl']);
+				$contents = file_get_contents($GLOBALS['HoldingVar']['imageurl']);
 				if ($contents) {
 					$byteCount = file_put_contents($out, $contents);
 					if (!$byteCount) {
@@ -1662,13 +1798,15 @@
 		}
 		return null;
 	}
+	}
+	if (!function_exists('deleteBook')) {
 	function deleteBook() {
-		if ($_POST['bookid']) {
+		if ($GLOBALS['HoldingVar']['bookid']) {
 			$conn = getBookConnection();
 			if ($conn->connect_errno>0) {
 				return die("Connection failed: " . $conn->connect_error);
 			}
-			$sql = 'DELETE FROM books WHERE BookID='.$_POST['bookid'];
+			$sql = 'DELETE FROM books WHERE BookID='.$GLOBALS['HoldingVar']['bookid'];
 			if ($conn->query($sql) === TRUE) {
 				return null;
 			} else {
@@ -1678,8 +1816,10 @@
 		}
 		return null;
 	}
+	}
+	if (!function_exists('fillShelf')) {
 	function fillShelf() {
-		if (isset($_POST['reloadShelf']) && $_POST['reloadShelf']=='true') {
+		if (isset($GLOBALS['HoldingVar']['reloadShelf']) && $GLOBALS['HoldingVar']['reloadShelf']=='true') {
 			$selectedIds = getBookIds(TRUE);
 			$allIds = getShelfSetIds();
 			$shelves = getShelves();
@@ -1744,6 +1884,8 @@
 			return $retval.'</script>';
 		}
 	}
+	}
+	if (!function_exists('stringShelves')) {
 	function stringShelves() {
 		$shelves = getShelves();
 		$retval = $retval . 	'var shelves = [';
@@ -1764,6 +1906,8 @@
 		$retval = $retval . 	'];';
 		return $retval;
 	}
+	}
+	if (!function_exists('getShelves')) {
 	function getShelves() {
 		$shelves = array();
 		$conn = getBookConnection();
@@ -1780,12 +1924,16 @@
 		}
 		return $shelves;
 	}
+	}
+	if (!function_exists('makeEditorForm')) {
 	function makeEditorForm() {
 		$retval = 			'<form action="editor.php" method="post" id="editorForm">';
 		$retval = $retval . makeInputFields();
 		$retval = $retval . '</form>';
 		return $retval;
 	}
+	}
+	if (!function_exists('makeBookGridView')) {
 	function makeBookGridView() {
 		$grid = '';
 		$bookIds = getBookIds(true);
@@ -1794,12 +1942,14 @@
 		}
 		return $grid;
 	}
+	}
+	if (!function_exists('makeGridViewEntry')) {
 	function makeGridViewEntry($id) {
 		if ($id=='') {
 			return '';
 		} else {
 			$book = getBook($id);
-			$retval = 			'<form action="editor.php" method="post" id="grid-view-'.$id.'">';
+			$retval = 			'<form action="editor.php" method="get" id="grid-view-'.$id.'">';
 			$retval = $retval . 	makeInputFields();
 			$retval = $retval . 	'<input type="hidden" name="bookid" value="'.$id.'" />';
 			$retval = $retval .		'<div class="grid-view-entry" onclick="openEditor(\'grid-view-'.$id.'\')">';
@@ -1814,31 +1964,39 @@
 			return $retval;
 		}
 	}
+	}
+	if (!function_exists('writeToFile')) {
 	function writeToFile($file, $data) {
 		$f = fopen($file, "w") or die("Unable to open file ".$file);
 		fwrite($f, $data);
 		fclose($f);
 	}
+	}
+	if (!function_exists('readFromFile')) {
 	function readFromFile($file) {
 		return file_get_contents($file);
 	}
+	}
+	if (!function_exists('makeInputFields')) {
 	function makeInputFields() {
-		$retval = 				'<input type="hidden" name="sort" value="'.$_POST['sort'].'">';
-		$retval = $retval . 	'<input type="hidden" name="number-to-get" value="'.$_POST['number-to-get'].'">';
-		$retval = $retval . 	'<input type="hidden" name="filter" value="'.$_POST['filter'].'">';
-		$retval = $retval . 	'<input type="hidden" name="read" value="'.$_POST['read'].'">';
-		$retval = $retval . 	'<input type="hidden" name="reference" value="'.$_POST['reference'].'">';
-		$retval = $retval . 	'<input type="hidden" name="owned" value="'.$_POST['owned'].'">';
-		$retval = $retval . 	'<input type="hidden" name="shipping" value="'.$_POST['shipping'].'">';
-		$retval = $retval . 	'<input type="hidden" name="reading" value="'.$_POST['reading'].'">';
-		$retval = $retval . 	'<input type="hidden" name="page" value="'.$_POST['page'].'">';
-		$retval = $retval . 	'<input type="hidden" name="view" value="'.$_POST['view'].'">';
-		$retval = $retval . 	'<input type="hidden" name="loaned" value="'.$_POST['loaned'].'">';
-		$retval = $retval . 	'<input type="hidden" name="fromdewey" value="'.$_POST['fromdewey'].'">';
-		$retval = $retval . 	'<input type="hidden" name="todewey" value="'.$_POST['todewey'].'">';
-		$retval = $retval . 	'<input type="hidden" name="currentid" value="'.$_POST['currentid'].'">';
+		$retval = 				'<input type="hidden" name="sort" value="'.$GLOBALS['HoldingVar']['sort'].'">';
+		$retval = $retval . 	'<input type="hidden" name="number-to-get" value="'.$GLOBALS['HoldingVar']['number-to-get'].'">';
+		$retval = $retval . 	'<input type="hidden" name="filter" value="'.$GLOBALS['HoldingVar']['filter'].'">';
+		$retval = $retval . 	'<input type="hidden" name="read" value="'.$GLOBALS['HoldingVar']['read'].'">';
+		$retval = $retval . 	'<input type="hidden" name="reference" value="'.$GLOBALS['HoldingVar']['reference'].'">';
+		$retval = $retval . 	'<input type="hidden" name="owned" value="'.$GLOBALS['HoldingVar']['owned'].'">';
+		$retval = $retval . 	'<input type="hidden" name="shipping" value="'.$GLOBALS['HoldingVar']['shipping'].'">';
+		$retval = $retval . 	'<input type="hidden" name="reading" value="'.$GLOBALS['HoldingVar']['reading'].'">';
+		$retval = $retval . 	'<input type="hidden" name="page" value="'.$GLOBALS['HoldingVar']['page'].'">';
+		$retval = $retval . 	'<input type="hidden" name="view" value="'.$GLOBALS['HoldingVar']['view'].'">';
+		$retval = $retval . 	'<input type="hidden" name="loaned" value="'.$GLOBALS['HoldingVar']['loaned'].'">';
+		$retval = $retval . 	'<input type="hidden" name="fromdewey" value="'.$GLOBALS['HoldingVar']['fromdewey'].'">';
+		$retval = $retval . 	'<input type="hidden" name="todewey" value="'.$GLOBALS['HoldingVar']['todewey'].'">';
+		$retval = $retval . 	'<input type="hidden" name="currentid" value="'.$GLOBALS['HoldingVar']['currentid'].'">';
 		return $retval;
 	}
+	}
+	if (!function_exists('exportBooks')) {
 	function exportBooks() {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -1866,6 +2024,8 @@
 			}
 		}
 	}
+	}
+	if (!function_exists('exportAuthors')) {
 	function exportAuthors() {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -1893,6 +2053,8 @@
 			}
 		}
 	}
+	}
+	if (!function_exists('makeBookList')) {
 	function makeBookList() {
 		$list = '<table>';
 		$bookIds = getBookIds(true);
@@ -1901,12 +2063,14 @@
 		}
 		return $list.'</table>';
 	}
+	}
+	if (!function_exists('makeListEntry')) {
 	function makeListEntry($id='') {
 		if ($id=='') {
 			return '';
 		} else {
 			$book = getBook($id);
-			$retval = '<form action="editor.php" method="post" id="list-'.$id.'">';
+			$retval = '<form action="editor.php" method="get" id="list-'.$id.'">';
 			$retval = $retval . makeInputFields();
 			$retval = $retval . '<input type="hidden" name="bookid" value="'.$id.'" />';
 			$retval = $retval . '<tr class="list-row" onclick="openEditor(\'list-'.$id.'\')">';
@@ -1920,6 +2084,8 @@
 			return $retval;
 		}
 	}
+	}
+	// if (!function_exists('getImageColor')) {
 	// function getImageColor($url) {
 	// 	if (file_exists($url)) {
 	// 		$img = ImageCreateFromJpeg($url);
@@ -1951,6 +2117,8 @@
 	// 		return "null";
 	// 	}
 	// }
+	// }
+	// if (!function_exists('rgbToHsl')) {
 	// function rgbToHsl($rgb)
 	// {
 	// 	$r = $rgb[0];
@@ -1986,6 +2154,8 @@
 	// 	}
 	// 	return array( round( $h, 2 ), round( $s, 2 ), round( $l, 2 ) );
 	// }
+	// }
+	// if (!function_exists('hslToRgb')) {
 	// function hslToRgb($hsl)
 	// {
 	// 	$h = $hsl[0];
@@ -2027,14 +2197,20 @@
 	// 	$b = ( $b + $m  ) * 255;
 	// 	return array( floor( $r ), floor( $g ), floor( $b ) );
 	// }
-	// function mixColor($rgb1, $rgb2) {
+	// }
+	//if (!function_exists('mixColor')) {
+	//function mixColor($rgb1, $rgb2) {
 	// 	return array(($rgb1[0]+$rgb2[0])/2, ($rgb1[1]+$rgb2[1])/2, ($rgb1[2]+$rgb2[2])/2);
 	// }
-	// function rgbToHex($rgb)
+	// }
+	//if (!function_exists('rgbToHex')) {
+	//function rgbToHex($rgb)
 	// {
 	// 	return '#' . sprintf('%02x', $rgb[0]) . sprintf('%02x', $rgb[1]) . sprintf('%02x', $rgb[2]);
 	// }
-	// function setAllImageColors() {
+	// }
+	//if (!function_exists('setAllImageColors')) {
+	//function setAllImageColors() {
 	// 	$conn = getBookConnection();
 	// 	if ($conn->connect_errno>0) {
 	// 		die("Connection failed: " . $conn->connect_error);
@@ -2054,6 +2230,8 @@
 	// 		$conn->query($sql);
 	// 	}
 	// }
+	//}
+	if (!function_exists('getImageColor')) {
 	function getImageColor($url) {
 		if (file_exists($url)) {
 			$delta = 24;
@@ -2069,6 +2247,8 @@
 			return "null";
 		}
 	}
+	}
+	if (!function_exists('setAllImageColors')) {
 	function setAllImageColors() {
 		$conn = getBookConnection();
 		if ($conn->connect_errno>0) {
@@ -2090,6 +2270,8 @@
 			$conn->query($sql);
 		}
 	}
+	}
+	if (!function_exists('importBooks')) {
 	function importBooks($contents) {
 		$rows = explode("\r\n", $contents);
 		$headers = explode("\t", $rows[0]);
@@ -2102,94 +2284,94 @@
 				$value = $data[$i][$j];
 				switch (strtolower($headers[$j])) {
 					case 'title':
-						$_POST['title'] = $value;
+						$GLOBALS['HoldingVar']['title'] = $value;
 						break;
 						case 'subtitle':
-						$_POST['subtitle'] = $value;
+						$GLOBALS['HoldingVar']['subtitle'] = $value;
 						break;
 						case 'copyright':
-						$_POST['Copyright'] = $value;
+						$GLOBALS['HoldingVar']['Copyright'] = $value;
 						break;
 						case 'publisher':
-						$_POST['Publisher'] = $value;
+						$GLOBALS['HoldingVar']['Publisher'] = $value;
 						break;
 						case 'city':
-						$_POST['City'] = $value;
+						$GLOBALS['HoldingVar']['City'] = $value;
 						break;
 						case 'state':
-						$_POST['State'] = $value;
+						$GLOBALS['HoldingVar']['State'] = $value;
 						break;
 						case 'country':
-						$_POST['Country'] = $value;
+						$GLOBALS['HoldingVar']['Country'] = $value;
 						break;
 						case 'isread':
-						$_POST['isread'] = $value;
+						$GLOBALS['HoldingVar']['isread'] = $value;
 						break;
 						case 'isreference':
-						$_POST['isreference'] = $value;
+						$GLOBALS['HoldingVar']['isreference'] = $value;
 						break;
 						case 'isowned':
-						$_POST['isowned'] = $value;
+						$GLOBALS['HoldingVar']['isowned'] = $value;
 						break;
 						case 'isreading':
-						$_POST['isreading'] = $value;
+						$GLOBALS['HoldingVar']['isreading'] = $value;
 						break;
 						case 'isshipping':
-						$_POST['isshipping'] = $value;
+						$GLOBALS['HoldingVar']['isshipping'] = $value;
 						break;
 						case 'isbn':
-						$_POST['isbn'] = $value;
+						$GLOBALS['HoldingVar']['isbn'] = $value;
 						break;
 						case 'loaneefirst':
-						$_POST['loaneefirst'] = $value;
+						$GLOBALS['HoldingVar']['loaneefirst'] = $value;
 						break;
 						case 'loaneelast':
-						$_POST['loaneelast'] = $value;
+						$GLOBALS['HoldingVar']['loaneelast'] = $value;
 						break;
 						case 'dewey':
-						$_POST['dewey'] = $value;
+						$GLOBALS['HoldingVar']['dewey'] = $value;
 						break;
 						case 'pages':
-						$_POST['pages'] = $value;
+						$GLOBALS['HoldingVar']['pages'] = $value;
 						break;
 						case 'width':
-						$_POST['width'] = $value;
+						$GLOBALS['HoldingVar']['width'] = $value;
 						break;
 						case 'height':
-						$_POST['height'] = $value;
+						$GLOBALS['HoldingVar']['height'] = $value;
 						break;
 						case 'depth':
-						$_POST['depth'] = $value;
+						$GLOBALS['HoldingVar']['depth'] = $value;
 						break;
 						case 'weight':
-						$_POST['weight'] = $value;
+						$GLOBALS['HoldingVar']['weight'] = $value;
 						break;
 						case 'primarylanguage':
-						$_POST['primary-language'] = $value;
+						$GLOBALS['HoldingVar']['primary-language'] = $value;
 						break;
 						case 'secondarylanguage':
-						$_POST['secondarylanguage'] = $value;
+						$GLOBALS['HoldingVar']['secondarylanguage'] = $value;
 						break;
 						case 'originallanguage':
-						$_POST['original-language'] = $value;
+						$GLOBALS['HoldingVar']['original-language'] = $value;
 						break;
 						case 'series':
-						$_POST['series'] = $value;
+						$GLOBALS['HoldingVar']['series'] = $value;
 						break;
 						case 'volume':
-						$_POST['volume'] = $value;
+						$GLOBALS['HoldingVar']['volume'] = $value;
 						break;
 						case 'format':
-						$_POST['format'] = $value;
+						$GLOBALS['HoldingVar']['format'] = $value;
 						break;
 						case 'edition':
-						$_POST['edition'] = $value;
+						$GLOBALS['HoldingVar']['edition'] = $value;
 						break;
 						case 'imageurl':
-						$_POST['imageurl'] = $value;
+						$GLOBALS['HoldingVar']['imageurl'] = $value;
 						break;
 						case 'authors':
-						$_POST['authors'] = array();
+						$GLOBALS['HoldingVar']['authors'] = array();
 						foreach (explode(';', $value) as $author) {
 							if (strpos($author, ':') !== false) {
 								return 'Ill formated author string on book '.$i.'. Stopping. Finished all books before this.';
@@ -2217,7 +2399,7 @@
 								$ln = $name;
 							}
 							$a = $arrayName = array('firstname' => $fn, 'middlenames' => $mn, 'lastname' => $ln, 'role' => $role);
-							array_push($_POST['authors'], $a);
+							array_push($GLOBALS['HoldingVar']['authors'], $a);
 						}
 						break;
 					default:
@@ -2243,5 +2425,9 @@
 			$ds = $d.'\n';
 		}
 		return "Books Successfully added: ".$ds;
+	}
+	}
+	function loadDeweys() {
+		return file_get_contents('deweys.txt');
 	}
 ?>

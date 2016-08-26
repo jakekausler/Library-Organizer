@@ -1,6 +1,6 @@
 <?php
-	require 'functions.php';
-	require 'login.php';
+	require_once 'functions.php';
+	require_once 'login.php';
 	checkLoginInformation();
 ?>
 <!DOCTYPE HTML>
@@ -20,20 +20,20 @@
 			<?php echo makeLoginArea(); ?>
 		</div>
 		<div id="export-control-buttons">
-			<form action="index.php" method="post">
+			<form action="index.php" method="get">
 				<?php echo makeInputFields(); ?>
 				<button id="export-return-button" class="export-control-button">
 					Return
 				</button>
 			</form
-			><form action="exportpage.php" method="post" target="_blank">
+			><form action="exportpage.php" method="get" target="_blank">
 				<?php echo makeInputFields(); ?>
 				<input type="hidden" name="export-action" value="books" />
 				<button id="export-books-button" class="export-control-button">
 					Export Books
 				</button>
 			</form
-			><form action="exportpage.php" method="post" target="_blank">
+			><form action="exportpage.php" method="get" target="_blank">
 				<?php echo makeInputFields(); ?>
 				<input type="hidden" name="export-action" value="authors" />
 				<button id="export-authors-button" class="export-control-button">
