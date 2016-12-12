@@ -36,10 +36,22 @@ function loadPage(selectedBooks, update, allBooks, shelves) {
 			setTimeout(function(){
 				hideProgressBar();
 			}, 0);
+			fillSearchSelect();
 		});
 	} else { 
 		loadShelves();
 	}
+}
+
+function fillSearchSelect() {
+	$('.booktext').each(function(i) {
+		$o = $('<option>');
+		$o.text($(this).text());
+		$('#search-select').append($o);
+	});
+	$("#search-entry").on('awesomplete-selectcomplete',function(){
+		alert(this.value);
+	});
 }
 
 function updateColors(allBooks) {
@@ -278,6 +290,7 @@ function loadShelves() {
 				}
 			});
 			console.log('Loaded Shelves');
+			fillSearchSelect();
 		},
 		dataType: 'text'
 	});

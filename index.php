@@ -7,9 +7,9 @@
 			removeBook();
 		}
 	}
-	if ($GLOBALS['HoldingVar']['filter'] != "") {
-		$GLOBALS['HoldingVar']['page']=1;
-	}
+	// if ($GLOBALS['HoldingVar']['filter'] != "") {
+	// 	$GLOBALS['HoldingVar']['page']=1;
+	// }
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -93,6 +93,14 @@
 							To Dewey
 						</label
 							><input id="to-dewey-input" class="dewey-input" type="text" name="todewey" value=<?php echo '"'.$GLOBALS['HoldingVar']['todewey'].'"'?>/>
+					</div>
+					<label id="has-image-label">
+						Has Image?
+					</label>
+					<div class="button-group">
+						<input type="radio" name="has-image" value="yes" <?php echo ($GLOBALS['HoldingVar']['has-image']=='yes')?'checked':''; ?>>Yes
+						<input type="radio" name="has-image" value="no" <?php echo ($GLOBALS['HoldingVar']['has-image']=='no')?'checked':''; ?>>No
+						<input type="radio" name="has-image" value="both" <?php echo ($GLOBALS['HoldingVar']['has-image']=='both')?'checked':''; ?>>Both
 					</div>
 				</div>
 				<div id="filter">
@@ -251,6 +259,7 @@
 		document.getElementById(id).submit();
 	}
 	function nextPage(current) {
+		console.log(current);
 		document.getElementById("page").value=current+1;
 		document.getElementById("sort-and-filter-form").submit();
 	}

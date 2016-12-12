@@ -70,7 +70,7 @@
 		} elseif ($GLOBALS['HoldingVar']['sort']=='series') {
 			$order = "if(Series2='' or Series2 is null,1,0), Series2, Volume, LastName, FirstName, MiddleNames, Title2";
 		} else {
-			$order = "Dewey, LastName, FirstName, MiddleNames, Series2, Volume, Title2";
+			$order = "Dewey, CASE WHEN Series = 'Loeb Classical Library' THEN CONCAT(COALESCE(LastName,''),COALESCE(FirstName,''),COALESCE(MiddleNames,''),COALESCE(Series,''),COALESCE(LPAD(Volume,4,0),'')) ELSE CONCAT(COALESCE(Series,''),COALESCE(LPAD(Volume,4,0),''),COALESCE(LastName,''),COALESCE(FirstName,''),COALESCE(MiddleNames,'')) END, Title2";
 		}
 		$titlechange = "CASE WHEN Title LIKE 'The %' THEN TRIM(SUBSTR(Title from 4)) ELSE CASE WHEN Title LIKE 'An %' THEN TRIM(SUBSTR(Title from 3)) ELSE CASE WHEN Title LIKE 'A %' THEN TRIM(SUBSTR(Title from 2)) ELSE Title END END END AS Title2";
 		$serieschange = "CASE WHEN Series LIKE 'The %' THEN TRIM(SUBSTR(Series from 4)) ELSE CASE WHEN Series LIKE 'An %' THEN TRIM(SUBSTR(Series from 3)) ELSE CASE WHEN Series LIKE 'A %' THEN TRIM(SUBSTR(Series from 2)) ELSE Series END END END AS Series2";
@@ -140,14 +140,16 @@
 		if ($filter == "WHERE " || $filter == "WHERE") {
 			$filter = "";
 		}
-		$sql = "SELECT books.BookID, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $GLOBALS['HoldingVar']['number-to-get'] . " OFFSET " . (($GLOBALS['HoldingVar']['page']-1)*$GLOBALS['HoldingVar']['number-to-get']):'');
+		$sql = "SELECT books.BookID, books.ImageURL, ".$titlechange.", ".$serieschange." FROM books LEFT JOIN ".$authors." ON books.BookID = Authors.BookID ".$filter." GROUP BY books.BookID ORDER BY " . $order . ($limit?" LIMIT " . $GLOBALS['HoldingVar']['number-to-get'] . " OFFSET " . (($GLOBALS['HoldingVar']['page']-1)*$GLOBALS['HoldingVar']['number-to-get']):'');
 		$result = $conn->query($sql);
 		if (!$result) {
 			die("Query failed: " . $conn->error);
 		}
 		$ids = array();
 		while ($row = $result->fetch_assoc()) {
-			$ids[] = $row['BookID'];
+			if (($GLOBALS['HoldingVar']['has-image'] == 'both') || ($GLOBALS['HoldingVar']['has-image'] == 'yes' && file_exists($row['ImageURL'])) || ($GLOBALS['HoldingVar']['has-image'] == 'no' && !file_exists($row['ImageURL']))) {
+				$ids[] = $row['BookID'];
+			}
 		}
 		return $ids;
 	}
@@ -1231,6 +1233,9 @@
 		if (!isset($GLOBALS['HoldingVar']['sort'])) {
 			$GLOBALS['HoldingVar']['sort'] = 'dewey';
 		}
+		if (!isset($GLOBALS['HoldingVar']['has-image'])) {
+			$GLOBALS['HoldingVar']['has-image'] = 'both';
+		}
 		if (!isset($GLOBALS['HoldingVar']['number-to-get'])) {
 			$GLOBALS['HoldingVar']['number-to-get'] = 50;
 		}
@@ -1434,12 +1439,9 @@
 				}
 			}
 			$GLOBALS['HoldingVar']['bookid']=$bookId;
-			$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
-			if ($conn->query($sql) !== TRUE) {
-				return "Error: " . $sql . "<br>" . $conn->error;
-			}
 			if ($GLOBALS['HoldingVar']['imageurl'] != '') {
-				$out = 'res/bookimages/'.$bookId.'.jpg';
+				$ext = pathinfo($GLOBALS['HoldingVar']['imageurl'])['extension'];
+				$out = 'res/bookimages/'.$bookId.'.'.$ext;
 				$contents = file_get_contents($GLOBALS['HoldingVar']['imageurl']);
 				if ($contents) {
 					$byteCount = file_put_contents($out, $contents);
@@ -1448,9 +1450,45 @@
 					}
 					$color = getImageColor($out);
 					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$bookId.';';
-					$conn->query($sql);					
+					$conn->query($sql);	
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".".$ext."' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}				
 				} else {
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
 					return "Error: " . "Unable to get image";
+				}
+			} else if ($_FILES['imagefile']) {
+				$ext = pathinfo($_FILES['imagefile']['name'])['extension'];
+				$out = 'res/bookimages/'.$bookId.'.'.$ext;
+				$contents = file_get_contents($_FILES['imagefile']['tmp_name']);
+				if ($contents) {
+				 	$byteCount = file_put_contents($out, $contents);
+					if (!$byteCount) {
+						return "Error: " . "Unable to get image";
+					}
+					$color = getImageColor($out);
+					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$bookId.';';
+					$conn->query($sql);	
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".".$ext."' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
+				} else {
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
+					return "Error: " . "Unable to get image";
+				}
+			} else {
+				$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
+				if ($conn->query($sql) !== TRUE) {
+					return "Error: " . $sql . "<br>" . $conn->error;
 				}
 			}
 		} else {
@@ -1777,8 +1815,10 @@
 			$sql = str_replace('\\\\', '\\', $sql);
 		}
 		if ($conn->query($sql) === TRUE) {
-			if ($GLOBALS['HoldingVar']['imageurl'] != '') {
-				$out = 'res/bookimages/'.$id.'.jpg';
+			$bookId = $id;
+			if ($GLOBALS['HoldingVar']['imageurl']) {
+				$ext = pathinfo($GLOBALS['HoldingVar']['imageurl'])['extension'];
+				$out = 'res/bookimages/'.$bookId.'.'.$ext;
 				$contents = file_get_contents($GLOBALS['HoldingVar']['imageurl']);
 				if ($contents) {
 					$byteCount = file_put_contents($out, $contents);
@@ -1786,13 +1826,49 @@
 						return "Error: " . "Unable to get image";
 					}
 					$color = getImageColor($out);
-					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
-					$conn->query($sql);					
+					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$bookId.';';
+					$conn->query($sql);	
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".".$ext."' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
 				} else {
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
 					return "Error: " . "Unable to get image";
 				}
+			} else if ($_FILES['imagefile']) {
+				$ext = pathinfo($_FILES['imagefile']['name'])['extension'];
+				$out = 'res/bookimages/'.$bookId.'.'.$ext;
+				$contents = file_get_contents($_FILES['imagefile']['tmp_name']);
+				if ($contents) {
+				 	$byteCount = file_put_contents($out, $contents);
+					if (!$byteCount) {
+						return "Error: " . "Unable to get image";
+					}
+					$color = getImageColor($out);
+					$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$bookId.';';
+					$conn->query($sql);	
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".".$ext."' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
+				} else {
+					$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
+					if ($conn->query($sql) !== TRUE) {
+						return "Error: " . $sql . "<br>" . $conn->error;
+					}
+					return "Error: " . "Unable to get image";
+				}
+			} else {
+				$sql = "UPDATE books SET ImageURL='res/bookimages/".$bookId.".jpg' WHERE BookID=".$bookId;
+				if ($conn->query($sql) !== TRUE) {
+					return "Error: " . $sql . "<br>" . $conn->error;
+				}
+				return "Error: " . "Unable to get image";
 			}
-			return null;
 		} else {
 			return "Error: " . $sql . "<br>" . $conn->error;
 		}
@@ -1980,6 +2056,7 @@
 	if (!function_exists('makeInputFields')) {
 	function makeInputFields() {
 		$retval = 				'<input type="hidden" name="sort" value="'.$GLOBALS['HoldingVar']['sort'].'">';
+		$retval = 				'<input type="hidden" name="has-image" value="'.$GLOBALS['HoldingVar']['has-image'].'">';
 		$retval = $retval . 	'<input type="hidden" name="number-to-get" value="'.$GLOBALS['HoldingVar']['number-to-get'].'">';
 		$retval = $retval . 	'<input type="hidden" name="filter" value="'.$GLOBALS['HoldingVar']['filter'].'">';
 		$retval = $retval . 	'<input type="hidden" name="read" value="'.$GLOBALS['HoldingVar']['read'].'">';
@@ -2264,7 +2341,7 @@
 			$id = $row['BookID'];
 			$url = $row['ImageURL'];
 			$color = getImageColor($url);
-			// echo "<img src='".$url."' width='50' alt='".$row['Title']."' /><div style='display:block; width:50; height:100; background-color=".$color." /></br>";
+			//echo "<img src='".$url."' width='50' alt='".$row['Title']."' /><div style='display:block; width:50; height:100; background-color=".$color." /></br>";
 			echo $color."<div style='margin: 25px; outline: 1px solid black; background-color: ".$color.";'><img width=50 src='".$url."' alt='".$row['Title']."' /></div></br>";
 			$sql = 'UPDATE books SET SpineColor='.($color=='null'?'null':'"'.$color.'"').' WHERE BookID='.$id.';';
 			$conn->query($sql);

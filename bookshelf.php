@@ -197,6 +197,11 @@
 				</button>
 			</form>
 		</div>
+		<div id="bookshelf-search">
+			<label>Search by Title:</label>
+			<input autocomplete="on" class="awesomplete" list="search-select" id="search-entry" type="text" />
+			<datalist id="search-select"></datalist>
+		</div>
 	</div>
 	<div id="bookcase-area" style="-webkit-overflow-scrolling: touch;">
 	</div>

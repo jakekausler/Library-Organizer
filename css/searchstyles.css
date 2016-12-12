@@ -40,6 +40,12 @@
 	clear: left;
 	width: 25%;
 }
+#has-image-label {
+	display: inline-block;
+	float: left;
+	clear: left;
+	width: 25%;
+}
 .sort-group {
 	width: 48%;
 	float: left;

@@ -42,8 +42,16 @@
 			</form
 			><form action="index.php" method="post">
 				<?php echo makeInputFields(); ?>
-				<button type="button" onclick="save()" id="editor-save-button" class="editor-control-button" <?php echo !$_SESSION['id']?'disabled':'' ?>>
+				<button type="button" onclick="save()" id="editor-save-button" class="editor-control-button" >
 					Save
+				</button>
+			</form
+			><form id="duplicate-form" action="editor.php" method="get">
+				<?php echo makeInputFields(); ?>
+				<input type="hidden" name="bookid" value=<?php echo "'".(($_SESSION['id'])?$_SESSION['id']:($GLOBALS['HoldingVar']['bookid']!=-1)?$GLOBALS['HoldingVar']['bookid']:"")."'" ?>>
+				<input type="hidden" name="dup" value="1" />
+				<button type="button" onclick="duplicate()" id="editor-duplicate-button" class="editor-control-button" <?php echo (!$_SESSION['id'] || $GLOBALS['HoldingVar']['bookid']==-1)?'disabled':'' ?>>
+					Duplicate
 				</button>
 			</form
 			><form action="index.php" method="post">
@@ -60,7 +68,7 @@
 	} else {
 	?>
 		<div id="editor">
-			<form id="editor-form" method="post" action="index.php">
+			<form id="editor-form" method="post" action="index.php" enctype="multipart/form-data">
 				<?php
 					if ($GLOBALS['HoldingVar']['bookid']!=-1) {
 						$book = getBook($GLOBALS['HoldingVar']['bookid']);
@@ -91,12 +99,16 @@
 					<div id="editor-image-info">
 						<div id="editor-image>">
 							<img id="editor-image-actual" src=<?php echo '"'.($book==NULL?'':($book['ImageURL']==''?'':$book['ImageURL'])).'"'?> alt=<?php echo '"'.($book==NULL?'':$book['Title']).'"'?>>
-							<input autocomplete="off" name="imageurl" id="image-entry" type="hidden" value="" />
+							<input autocomplete="off" name="imageurl" id="image-entry" type="hidden" value=<?php echo '"'.($book==NULL?'':($book['ImageURL']==''?'':$book['ImageURL'])).'"'?> />
 						</div>
 						<div id="editor-image-buttons">
 							<button type="button" onclick="changeImage()">
 								Change
 							</button>
+							<div id="editor-image-upload">
+							<span>Upload:</span>
+							<input type="file" name= "imagefile" id="editor-image-upload-input" />
+							</div>
 						</div>
 					</div>
 				</div>
@@ -240,7 +252,7 @@
 					</div>
 				</div>
 				<?php echo makeInputFields(); ?>
-				<input type="hidden" name="bookid" value=<?php echo '"'.$GLOBALS['HoldingVar']['bookid'].'"'; ?> />
+				<input type="hidden" name="bookid" value=<?php echo '"'.((isset($GLOBALS['HoldingVar']['dup']) && $GLOBALS['HoldingVar']['dup'])?-1:$GLOBALS['HoldingVar']['bookid']).'"'; ?> />
 			</form>
 		</div>
 	<?php
@@ -249,6 +261,7 @@
 </body>
 <script>
 	window.onload = function() {
+		document.getElementById('editor-image-upload-input').addEventListener('change', uploadImage, false);
 		selectCorrect();
 		if (<?php echo ($book==NULL?'false':'true'); ?>) {
 			makeAuthorSelect();
@@ -395,6 +408,11 @@
 		}
 		return false;
 	}
+	function duplicate() {
+		console.log(<?php echo ($_SESSION['id'])?$_SESSION['id']:($GLOBALS['HoldingVar']['bookid']!=-1)?$GLOBALS['HoldingVar']['bookid']:"" ?>);
+		document.getElementById("duplicate-form").submit();
+		return false;
+	}
 	function removeBook() {
 		console.log('here');
 		if (confirm("Are you sure you would like to remove this book? This cannot be undone.")) {
@@ -408,11 +426,30 @@
 		return false;
 	}
 	function changeImage() {
-		var imageurl = promptURL()
+		var imageurl = promptURL();
 		if (imageurl != '' && imageurl.endsWith('.jpg')) {
 			document.getElementById('image-entry').value = imageurl;
+			document.getElementById('editor-image-upload-input').value = '';
 			document.getElementById('editor-image-actual').src = imageurl;
 		}
+	}
+	function uploadImage(evt) {
+		console.log(evt);
+		var file = evt.target.files[0];
+		if (!file.type.match('image.*')) {
+			document.getElementById('editor-image-upload-input').value = '';
+			return false;
+		}
+		var reader = new FileReader();
+
+		reader.onload = (function(f) {
+			return function(e) {
+				var loc = document.getElementById('editor-image-actual');
+				loc.src = e.target.result;
+				document.getElementById('image-entry').value = '';
+			}
+		})(file);
+		reader.readAsDataURL(file);
 	}
 	function promptURL() {
 		return prompt("Enter the image url:");
@@ -474,6 +511,9 @@
 		}
 		if (!$.isNumeric(document.getElementById('weight-entry').value) || parseInt(document.getElementById('weight-entry').value)<0) {
 			err.push('Weight must be a number that is at least zero!')
+		}
+		if (document.getElementById('dewey-entry').value=='') {
+			err.push('Dewey cannot be empty!')
 		}
 		return err;
 	}
