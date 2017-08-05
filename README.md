@@ -12,33 +12,30 @@
   * In Transition Style, are Mix and Cut selected, and Rate set to 2:00?
   * Upstream Keys
     * Is Upstream Key 1 set to the following:
-| Setting | Value |
-|---|---|
-| Fill Source | Pro Presenter |
-| Key Source | Pro Presenter |
-| Mask | Unselected |
-| Pre Multiplied Key | Unselected |
-| Clip | 90.0% |
-| Gain | 100% |
-| Invert Key | Unselected |
-| Flying Key | Selected |
-| Position X | 0.00 |
-| Position Y | -6.00 |
-| Size X | 0.90 |
-| Size Y | 0.90 |
-| Rotation | 0 x 0 |
-| Rate | 1:00 |
+      * Fill Source: Pro Presenter
+      * Key Source: Pro Presenter
+      * Mask: Unselected
+      * Pre Multiplied Key: Unselected
+      * Clip: 90.0%
+      * Gain: 100%
+      * Invert Key: Unselected
+      * Flying Key: Selected
+      * Position X: 0.00
+      * Position Y: -6.00
+      * Size X: 0.90
+      * Size Y: 0.90
+      * Rotation: 0 x 0
+      * Rate: 1:00
     * Is Upstream Key 2 set to the following:
-| Setting | Value |
-| --- | --- |
-| Fill Source | Pro Presenter |
-| Key Source | Pro Presenter |
-| Mask | Unselected |
-| Pre Multiplied Key | Unselected |
-| Clip | 10.0% |
-| Gain | 100% |
-| Invert Key | Unselected |
-| Flying Key | Unselected |
+      * Setting: Value
+      * Fill Source: Pro Presenter
+      * Key Source: Pro Presenter
+      * Mask: Unselected
+      * Pre Multiplied Key: Unselected
+      * Clip: 10.0%
+      * Gain: 100%
+      * Invert Key: Unselected
+      * Flying Key: Unselected
   * Capture
     * Is Capture From set to H.264 Pro Recorder?
     * Is Video Capture Format set to Native?
